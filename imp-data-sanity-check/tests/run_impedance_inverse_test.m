@@ -52,9 +52,10 @@ opts.lambdareal=false;
 if (test_id >= 9 && test_id <= 11)
     opts.lambdareal = true;
 end
-if (test_id >= 12)
+
+if (strcmpi(opts.impedance_type,'antbar2') || ...
+        strcmpi(opts.impedance_type,'antbar3'))
     opts.lambdareal = true;
-    opts.impedance_type = 'antbar2';
 end
 
 opts.constphasefactor = false;
