@@ -16,7 +16,9 @@ fnameout = [fnamebase, '_invsol', char(datetime), '.mat'];
 load(fname);
 addpath('../');
 addpath('../../');
+addpath('../../inverse-obstacle-scattering2d/');
 addpath(genpath_ex('../../'));
+addpath(genpath_ex('../../inverse-obstacle-scattering2d/'));
 warning('off')
 
 optim_opts = [];
@@ -42,18 +44,19 @@ if(strcmpi(bc.invtype,'i'))
     nh = 1;
     hcoefs = zeros(2*nh+1,1);
     [src_init,varargout] = rla.update_geom(A.src_info,nh,hcoefs);
-    lam = [];
+    laminit = [];
 elseif(strcmpi(bc.invtype,'o'))
     src_init = [];
+    laminit = lam;
 else
     src_init = [];
-    lam = [];
+    laminit = [];
 end
     
 
 
 [inv_data_all,src_info_out] = rla.rla_inverse_solver(u_meas,bc,...
-                          optim_opts,opts,src_init,lam);
+                          optim_opts,opts,src_init,laminit);
 
 fnameout = [fnamebase, '_', bc.invtype, '_invsol', char(datetime), '.mat'];                      
 save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts');

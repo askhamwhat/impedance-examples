@@ -27,6 +27,7 @@ L = src_info.L;
 
 t = 0:2*pi/n:2*pi*(1.0-1.0/n);
 lam = @(t) 2 + sin(2*t) + (1i*(0.2+0.2*cos(t)));
+lam = @(t) (1.2 + 1.1*1i)*ones(size(t));
 %lam = @(t) 1.4;
 %lam = @(t) 1;
 src_info.lambda = lam(t).';
@@ -68,7 +69,7 @@ t_tgt_grid = t_tgt_grid(:);
 t_dir_grid = t_dir_grid(:);
 xtgt = r_tgt*cos(t_tgt_grid);
 ytgt = r_tgt*sin(t_tgt_grid);
-tgt   = [ xtgt'; ytgt'];
+tgt   = [ xtgt.'; ytgt.'];
 
 
 sensor_info = [];
@@ -97,7 +98,7 @@ for ik=1:nk
    
    
    t = 0:2*pi/n:2*pi*(1.0-1.0/n);
-   src_info.lambda = lam(t)';
+   src_info.lambda = lam(t).';
    
    
    [mats,erra] = rla.get_fw_mats(kh(ik),src_info,bc,sensor_info,opts);

@@ -1,7 +1,7 @@
 %Impedance Inverse Test
 %
 % purpose: check that the utilities work for basic impedance problems
-% 
+%
 % with the parameters below, we see:
 %   - 'i' -> converges quickly, doesn't care much about parameters
 %   - 'o' -> not bad. requires higher frequency than 
@@ -26,7 +26,7 @@ opts.verbose=true;
 opts.ncoeff_impedance_mult = 0.5;
 bc = [];
 bc.type = 'Impedance';
-bc.invtype = 'o';
+bc.invtype = 'io';
 optim_opts.optim_type = 'gn';
 optim_opts.eps_curv = 1e-3;
 optim_opts.filter_type = 'gauss-conv';
@@ -34,20 +34,32 @@ optim_opts.eps_res = 1e-7;
 optim_opts.eps_upd = 1e-7;
 optim_opts.maxit = 10;
 opts.store_src_info = true;
-opts.lambdareal=false;
+opts.lambdareal=true;
 
 if(strcmpi(bc.invtype,'i'))
     A = load(fname);
     nh = 1;
     hcoefs = zeros(2*nh+1,1);
     [src_init,varargout] = rla.update_geom(A.src_info,nh,hcoefs);
-    lam = [];
+    laminit = [];
     opts.ncoeff_impedance_mult = 1;    
 elseif(strcmpi(bc.invtype,'o'))
     src_init = [];
+    A = load(fname);
+    laminit = A.lam;
+    %nh = 0;
+    %hcoefs = zeros(2*nh+1,1);
+    %[src_init,varargout] = rla.update_geom(A.src_info,nh,hcoefs);
 else
     src_init = [];
-    lam = [];
+    laminit = [];
+    %A = load(fname);
+    %nh = 0;
+    %hcoefs = zeros(2*nh+1,1);
+    %[src_init,varargout] = rla.update_geom(A.src_info,nh,hcoefs);
+    %n = length(src_init.xs);
+    %t = 0:2*pi/n:2*pi*(1.0-1.0/n);
+    %laminit = (A.lam(t)).';
     opts.ncoeff_impedance_mult = 0.5;
     
 end
@@ -55,7 +67,7 @@ end
 %
 
 [inv_data_all,src_info_out] = rla.rla_inverse_solver(u_meas,bc,...
-                          optim_opts,opts,src_init,lam);
+                          optim_opts,opts,src_init,laminit);
 
 fnameout = [fnamebase, '_', bc.invtype, '_invsol', char(datetime), '.mat'];                      
 save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts');

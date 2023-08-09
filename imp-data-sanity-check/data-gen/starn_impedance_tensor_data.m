@@ -11,7 +11,6 @@ path_to_ios2d = '../../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
 
-
 % max number of wiggles
 nc = 3;
 
@@ -25,17 +24,17 @@ src_info = geometries.starn(coefs,nc,n);
 L = src_info.L;
 
 t = 0:2*pi/n:2*pi*(1.0-1.0/n);
-lam = @(t) 2 + sin(2*t);
+lam = @(t) 0.25*(2 + sin(2*t));
 %lam = @(t) 1.4;
-%lam = @(t) 1;
-src_info.lambda = lam(t)';
+%lam = @(t) 1.1*ones(size(t));
+src_info.lambda = lam(t).';
 nk = 25;
 
 % Set of frequencies (k_{i})
 dk = 0.5;
 kh = 1:dk:(1+(nk-1)*dk);
 
-% Test obstacle Frechet derivative for Dirichlet problem
+%
 bc = [];
 bc.type = 'Impedance';
 bc.invtype = 'o';
@@ -95,7 +94,7 @@ for ik=1:nk
    
    
    t = 0:2*pi/n:2*pi*(1.0-1.0/n);
-   src_info.lambda = lam(t)';
+   src_info.lambda = lam(t).';
    
    
    [mats,erra] = rla.get_fw_mats(kh(ik),src_info,bc,sensor_info,opts);
