@@ -250,7 +250,7 @@ for ik=1:nk
    u_meas0.err_est = erra;
    u_meas{ik} = u_meas0;
    if(verbose) 
-       fprintf('freq %d of %d. kh = %7.4e \t err est = %7.4e\n',ik,nk,erra);
+       fprintf('freq %d of %d. kh = %7.4e \t err est = %7.4e\n',ik,nk,kh(ik),erra);
    end
 end
 
