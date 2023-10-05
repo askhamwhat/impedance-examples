@@ -15,7 +15,7 @@
 
 clearvars; 
 
-test_id = 13;
+test_id = 15;
 
 geoinfo = [];
 kinfo = [];
@@ -114,7 +114,63 @@ switch test_id
         lamcfs = cell(2,1);
         lamcfs{1} = @(kh) delta/(kh*c2); % delta/omega
         lamcfs{2} = @(kh) 1/cr; 
+    case 14
+        %
+        % WARNING!
+        % the antbar3 parameters may have changed meaning since this was
+        % defined
+        %
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 20;
+        impedance_type = 'antbar3';
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 59;
+        delta = 20; % while this seems large it gets attenuated by omega
+        c2 = 2.1;
+        c1 = 1.2;
+        rho1 = 0.7;
+        rho2 = 1.3;
+        cr = c1/c2;
+        rhor = rho1/rho2;
+        % specify omega-dependency by kh = k2 = omega/c2 dependency
+        lamcfs = cell(2,1);
+        lamcfs{1} = @(kh) delta/(kh*c2); % delta/omega
+        lamcfs{2} = @(kh) 1/cr; 
+        lamcfs{3} = @(kh) 1/rhor;
+    case 15
+        %
+        % complicated plane, trying more frequencies
+        %
+        % smooth plane with transmission defaults
+
+%          NOTE: in the AB notation b1 = delta/omega, 
+%                     b2 = 1/(rho_r*c_r*sqrt(1+delta^2/omega^2)), and
+%                     b3 = 1/(rho_r*(1+delta^2/omega^2))        
+        geoinfo.name = 'smooth_plane';
+        impedance_type = 'antbar3';
+        geoinfo.nterms = 70;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        c1 = 0.5;
+        c2 = 1.0;
+        rho1 = 0.7;
+        rho2 = 1.2;
+        rhor = rho1/rho2;
+        cr = c1/c2;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        delta = sqrt(3)/2*khmax;
+        lamcfs = cell(3,1);
+        lamcfs{1} = @(kh) delta/(kh*c2); % delta/omega
+        lamcfs{2} = @(kh) 1/(rhor*cr*sqrt(1+(delta/(kh*c2))^2)); 
+        lamcfs{3} = @(kh) 1/(rhor*(1+(delta/(kh*c2))^2));
         
+        % use the default delta which is just in the 
+        % suggested asymptotic regime in Antoine Barucq paper
+        
+        
+
     otherwise
         warning('unknown test, doing nothing');
         lamcfs = [];
