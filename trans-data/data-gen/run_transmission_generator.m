@@ -1069,6 +1069,241 @@ switch test_id
         transparams.rho2 = 0.7;
         transparams.delta = sqrt(3)*khmax/256;
         
+    case 64
+        % smooth plane with transmission defaults
+        % more physical parameters for sound waves 
+        % (speed = bulk modulus/density)
+        %
+
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax*4;
+        
+    case 65
+        % smooth plane with transmission defaults
+        % more physical parameters for sound waves 
+        % (speed = bulk modulus/density)
+        %
+
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax*16;
+
+    case 66
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/8;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax;
+        %
+
+    case 67
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/8;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/4;
+        %
+
+    case 68
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/8;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/16;
+        %
+
+    case 69
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/8;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/64;
+        %
+
+    case 70
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/8;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/256;
+        %
+
+    case 71
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/4;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax;
+        %
+
+    case 72
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/4;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/4;
+        %
+
+    case 73
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/4;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/16;
+        %
+
+    case 74
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/4;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/64;
+        %
+
+    case 75
+        % smooth plane with transmission defaults
+        % default dissipaiton
+        % only collect data at a section of reflected receptor location per incident
+        % wave
+        geoinfo.name = 'smooth_plane';
+        geoinfo.nterms = 70;
+        geoinfo.arrangement = 'reflect';
+        geoinfo.angle = pi/4;
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 79;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        transparams.c1 = 0.5;
+        transparams.c2 = 1.0;
+        transparams.rho1 = 1.2;
+        transparams.rho2 = 0.7;
+        transparams.delta = sqrt(3)*khmax/256;
+        %        
         
     otherwise
         warning('unknown test, doing nothing');

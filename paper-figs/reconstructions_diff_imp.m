@@ -2,17 +2,18 @@
 %
 % plot the reconstructions obtained for different impedance models
 %
-% test_id = 12 standard dissipation plane 2 (omegamax = 40)
-% test_id = 3 standard dissipation plane 1 (omegamax = 30)
-% test_id = 20 standard dissipation starfish (omegamax = 10)
+% test_id = 17 standard dissipation plane 2 (omegamax = 40)
+% test_id = 18 standard dissipation plane 1 (omegamax = 30)
+% test_id = 19 standard dissipation random (omegamax = 20)
+% test_id = 16 standard dissipation starfish (omegamax = 30)
 
 path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
 
-test_range = [20,3,12];
+test_range = [16,17,18,19];
 
-geo_names = {'star','plane1','plane2'};
+geo_names = {'starfish','plane1','plane2','random'};
 imp_list = {'Fourier','$\lambda_{\textrm{CH}}$','$\lambda_{\textrm{ABV}}$'};
 
 fnames_f = {};
@@ -23,43 +24,43 @@ fnames_orig = {};
 for j = 1:length(test_range)
     test_id = test_range(j);
     
-    wildcardstr = sprintf('../trans-data/data-out/test_%03d*antbar*.mat',test_id);
+    wildcardstr = sprintf('../imp-data/data-out/test_%03d*antbar*.mat',test_id);
     st = dir(wildcardstr);
     if isempty(st)
         warning('no output file found matching test id %d for abv model. not generated yet?',test_id)
         return
     end
-    fnamebase = ['../trans-data/data-out/',erase(st.name,'.mat')];
+    fnamebase = ['../imp-data/data-out/',erase(st(end).name,'.mat')];
     fnametmp = [fnamebase, '.mat'];
     fnames_abv{j} = fnametmp;
 
-    wildcardstr = sprintf('../trans-data/data-out/test_%03d*constkappa*.mat',test_id);
+    wildcardstr = sprintf('../imp-data/data-out/test_%03d*constkappa*.mat',test_id);
     st = dir(wildcardstr);
     if isempty(st)
         warning('no output file found matching test id %d for ck model. not generated yet?',test_id)
         return
     end
-    fnamebase = ['../trans-data/data-out/',erase(st.name,'.mat')];
+    fnamebase = ['../imp-data/data-out/',erase(st(end).name,'.mat')];
     fnametmp = [fnamebase, '.mat'];
     fnames_ck{j} = fnametmp;
 
-    wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourier*.mat',test_id);
+    wildcardstr = sprintf('../imp-data/data-out/test_%03d*fourier*.mat',test_id);
     st = dir(wildcardstr);
     if isempty(st)
         warning('no output file found matching test id %d for fourier model. not generated yet?',test_id)
         return
     end
-    fnamebase = ['../trans-data/data-out/',erase(st.name,'.mat')];
+    fnamebase = ['../imp-data/data-out/',erase(st(end).name,'.mat')];
     fnametmp = [fnamebase, '.mat'];
     fnames_f{j} = fnametmp;
 
-    wildcardstr = sprintf('../trans-data/data-out/test_%03d*trans.mat',test_id);
+    wildcardstr = sprintf('../imp-data/data-out/test_%03d*impck.mat',test_id);
     st = dir(wildcardstr);
     if isempty(st)
         warning('no output file found matching test id %d. not generated yet?')
         return
     end
-    fnamebase = ['../trans-data/data-out/',erase(st.name,'.mat')];
+    fnamebase = ['../imp-data/data-out/',erase(st(1).name,'.mat')];
     fnametmp = [fnamebase, '.mat'];
     fnames_orig{j} = fnametmp;
 end
@@ -70,12 +71,12 @@ splots = {};
 omega_lists = cell(3,1);
 omega_lists{1} = [2,5,10];
 omega_lists{2} = [5,10,20];
-omega_lists{3} = [5,10,20];
+omega_lists{3} = [5,10,40];
 
 for j = 1:length(test_range)
     fnametmp = fnames_orig{j};
-    load(fnametmp,'transparams_use','kinfo_use','src_info');
-    omegas = (kinfo_use.k1:kinfo_use.dk:(kinfo_use.k1+(kinfo_use.nk-1)*kinfo_use.dk))/transparams_use.c2;
+    load(fnametmp,'kinfo_use','src_info');
+    omegas = (kinfo_use.k1:kinfo_use.dk:(kinfo_use.k1+(kinfo_use.nk-1)*kinfo_use.dk));
 
     strues{j} = src_info;
 
@@ -117,7 +118,7 @@ for j = 1:length(test_range)
     fig = figure(j);
     clf;
 
-    tiledlayout(3,3,'TileSpacing','Compact');
+    tiledlayout(3,3,'TileSpacing','Tight');
     st = strues{j};
     xt = st.xs; yt = st.ys;
 
@@ -151,7 +152,7 @@ for j = 1:length(test_range)
                 ylabel(imp_list{i})
             end
 
-            fontsize(gca, scale=1.5);
+            fontsize(gca,scale=1.5);
             
         end
     end

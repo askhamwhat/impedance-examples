@@ -10,7 +10,9 @@ path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
 
-image_to_make = 4;
+image_to_make = 7;
+
+mult_epscurv_runs = false;
 
 switch image_to_make    
     case 1
@@ -36,6 +38,37 @@ switch image_to_make
         delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_tens';
         omega_list = [5,20,40];
+    
+    case 5
+        test_range = [59,60,61];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_tens';
+        omega_list = [5,20,40];
+
+    case 6
+        test_range = [66,68,70];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_pio8';
+        omega_list = [5,20,40];
+        mult_epscurv_runs = true;
+        epsmake = 1e-1;
+
+    case 7
+        test_range = [71,73,75];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_pio4';
+        omega_list = [5,20,40];
+        mult_epscurv_runs = true;
+        epsmake = 1e-1;
+
+    case 8
+        test_range = [66,68,70];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_pio8';
+        omega_list = [5,20,40];
+        mult_epscurv_runs = true;
+        epsmake = 1e-3;
+
 
 end
 
@@ -52,8 +85,21 @@ for j = 1:length(test_range)
         warning('no output file found matching test id %d for abv model. not generated yet?',test_id)
         return
     end
-    fnamebase = ['../trans-data/data-out/',erase(st(2).name,'.mat')];
+    fnamebase = ['../trans-data/data-out/',erase(st(1).name,'.mat')];
     fnametmp = [fnamebase, '.mat'];
+
+    if mult_epscurv_runs
+        for jj = 1:length(st)
+            fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
+            fnametmp = [fnamebase, '.mat'];
+            Atmp = load(fnametmp);
+            if Atmp.optim_opts.eps_curv == epsmake
+                break
+            end
+        end
+    end
+
+    fnametmp
     fnames_abv{j} = fnametmp;
 
     wildcardstr = sprintf('../trans-data/data-out/test_%03d*trans.mat',test_id);
@@ -109,7 +155,8 @@ fac = 1.3;
 
 fig = figure(1);
 clf;
-tiledlayout(3,3,'TileSpacing','Compact');
+set(gcf,'Position',[0,0,400,400])
+tiledlayout(3,3,'TileSpacing','Tight');
 
 st = strues{1};
 xt = st.xs; yt = st.ys;
@@ -155,7 +202,7 @@ set(0,'defaultTextInterpreter','latex');
 
 fig2 = figure(2);
 clf;
-t = tiledlayout(3,3,'TileSpacing','Compact');
+t = tiledlayout(3,3,'TileSpacing','Tight');
 fs = 14;
 
 title(t,'recovered parameters','FontSize',fs)

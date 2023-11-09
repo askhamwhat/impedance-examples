@@ -1,5 +1,5 @@
 function fnameout = inversetest_runner(test_id,ifforce_constkappa,...
-    ifphaseon,ifforce_fourier,invtype,iflhp,ninner,eps_curv,sigma)
+    ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,sigma)
 %INVERSETEST_RUNNER a relatively stable selection of optimization
 % parameters
 %
@@ -17,8 +17,8 @@ end
 if nargin < 5 || isempty(invtype)
     invtype = 'io';
 end
-if nargin < 6 || isempty(iflhp)
-    iflhp = false;
+if nargin < 6 || isempty(ifckconstraint)
+    ifckconstraint = false;
 end
 if nargin < 7 || isempty(ninner)
     ninner = 5;
@@ -91,8 +91,8 @@ if strcmpi(impedance_type,'antbar2')
     opts.lambdaprox = @(lamcfs) sign(lamcfs).*min(abs(lamcfs),100);
 elseif strcmpi(impedance_type,'antbar3') % FORCES PHYSICALITY...
     opts.lambdaprox = @(lamcfs) max(lamcfs,0);
-elseif strcmpi(impedance_type,'constkappa') && iflhp
-    opts.lambdaprox = @(lamcfs) min(real(lamcfs),reshape([Inf,0],size(lamcfs)))+1i*min(imag(lamcfs),0);
+elseif strcmpi(impedance_type,'constkappa') && ifckconstraint
+    opts.lambdaprox = @(lamcfs) real(lamcfs)+1i*min(imag(lamcfs),0);
 end
 
 bc = [];

@@ -1,5 +1,5 @@
 function fnameout = inversetest_runner(test_id,ifforce_constkappa,...
-    ifphaseon,ifforce_fourier,invtype,iflhp,ninner)
+    ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,sigma)
 %INVERSETEST_RUNNER a relatively stable selection of optimization
 % parameters
 %
@@ -17,12 +17,19 @@ end
 if nargin < 5 || isempty(invtype)
     invtype = 'io';
 end
-if nargin < 6 || isempty(iflhp)
-    iflhp = false;
+if nargin < 6 || isempty(ifckconstraint)
+    ifckconstraint = false;
 end
 if nargin < 7 || isempty(ninner)
     ninner = 5;
 end
+if nargin < 8 || isempty(eps_curv)
+    eps_curv = 1e-1;
+end
+if nargin < 9 || isempty(sigma)
+    sigma = 0;
+end
+
 
 % select data set to load and some overrides...
 
@@ -42,6 +49,14 @@ fnamebase = ['../data-out/',erase(st.name,'.mat')];
 fname = [fnamebase, '.mat'];
 
 A = load(fname);
+
+u_meas = A.u_meas;
+for j = 1:length(u_meas)
+    utmp = u_meas{j}.uscat_tgt;
+    scal = max(abs(utmp(:)));
+    u_meas{j}.uscat_tgt = utmp + sigma*scal*randn(size(utmp),"like",utmp);
+end
+
 
 impedance_type = A.impedance_type;
 
@@ -67,8 +82,8 @@ if strcmpi(impedance_type,'antbar2')
     opts.lambdaprox = @(lamcfs) sign(lamcfs).*min(abs(lamcfs),100);
 elseif strcmpi(impedance_type,'antbar3')
     opts.lambdaprox = @(lamcfs) max(lamcfs,0);
-elseif strcmpi(impedance_type,'constkappa') && iflhp
-    opts.lambdaprox = @(lamcfs) min(real(lamcfs),reshape([Inf,0],size(lamcfs)))+1i*min(imag(lamcfs),0);
+elseif strcmpi(impedance_type,'constkappa') && ifckconstraint
+    opts.lambdaprox = @(lamcfs) real(lamcfs)+1i*min(imag(lamcfs),0);
 end
 
 bc = [];
@@ -77,7 +92,7 @@ bc.invtype = invtype;
 opts.impedance_type = impedance_type;
 opts.ncoeff_impedance_mult = 0.5;
 optim_opts.optim_type = 'min(gn,sd)';
-optim_opts.eps_curv = 1e-1;
+optim_opts.eps_curv = eps_curv;
 optim_opts.filter_type = 'min(step_length,gauss-conv)';
 optim_opts.optim_type_imp = 'sd';
 optim_opts.filter_type_imp = 'step_length';
@@ -120,7 +135,7 @@ end
     
 %
 
-[inv_data_all,~] = rla.rla_inverse_solver(A.u_meas,bc,...
+[inv_data_all,~] = rla.rla_inverse_solver(u_meas,bc,...
                           optim_opts,opts,src_init,lam_init);
 
 phasestr = 'phaseoff';

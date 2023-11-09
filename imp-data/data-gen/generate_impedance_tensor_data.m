@@ -24,7 +24,7 @@ function [fname] = generate_impedance_tensor_data(test_id,lamcfs, ...
 %   geoinfo - struct, specify problem geometry, sensor and incident
 %                direction info
 %       geoinfo.name - string ('starfish'), one of starfish, simple-plane,
-%                          or complicated plane
+%                          or complicated plane, or random
 %       geoinfo.nppw - integer (20), number of points per wavelength for
 %                          boundary discretization
 %       geoinfo.nrecfactor - integer (10), number of receivers at each
@@ -32,6 +32,7 @@ function [fname] = generate_impedance_tensor_data(test_id,lamcfs, ...
 %       geoinfo.nincfactor - integer (10), number of incident directions
 %                          at each frequency is set to floor(nincfactor*k)
 %       geoinfo.narm - integer, (3) if starfish domain, how many arms 
+%       geoinfo.nmode - integer, (5) if random domain, how many modes
 %       geoinfo.amp - float, (0.3) if starfish domain, amplitude that arms
 %                           deviate from rad.
 %       geoinfo.rad- float, (1.0) if starfish domain, radius of circle
@@ -82,6 +83,9 @@ nppw = 20;
 % defaults for simple plane
 nterms = 30;
 
+%defaults for random
+nmode = 5;
+
 if (isfield(geoinfo,'name'))
     name = geoinfo.name;
 end
@@ -106,13 +110,19 @@ end
 if (isfield(geoinfo,'nterms'))
     nterms = geoinfo.nterms;
 end
+if (isfield(geoinfo,'nmode'))
+    nmode = geoinfo.nmode;
+end
 
 geoinfo_use = struct('name',name,'narm',narm,'amp',amp,'rad',rad,...
-    'nrecfactor',nrecfactor,'nincfactor',nincfactor,'nppw',nppw);
+    'nrecfactor',nrecfactor,'nincfactor',nincfactor,'nppw',nppw,'nmode',nmode);
 
 fname_geo = name;
 if (strcmpi(name,'starfish'))
     fname_geo = sprintf('%s_%02d_%5.2e',name,narm,amp);
+end
+if (strcmpi(name,'random'))
+    fname_geo = sprintf('%s_%02d_mode',name,nmode);
 end
 
 % kinfo defaults
@@ -152,6 +162,12 @@ if strcmpi(name,'starfish')
 
     n  = max(300,100*narm);
     src_info = geometries.starn(starcoefs,narm,n);
+elseif strcmpi(name,'random')
+    randcoefs = 0.1*randn(2*nmode+1,1);
+    randcoefs(1) = 1;
+
+    n  = max(300,100*narm);
+    src_info = geometries.starn(randcoefs,nmode,n);
 elseif strcmpi(name,'smooth_plane')
     n  = max(300,30*nterms);
     src_info = geometries.smooth_plane(nterms,n);
@@ -167,6 +183,9 @@ kh = k1:dk:(k1+(nk-1)*dk);
 bc = [];
 bc.type = 'Impedance';
 bc.invtype = 'o';
+
+plot(src_info.xs,src_info.ys)
+pause(1)
 
 save(fname,'src_info','lamcfs','geoinfo_use','kinfo_use','impedance_type');
 
@@ -186,6 +205,9 @@ for ik=1:nk
    if (strcmpi(name,'starfish'))
        n = max(n,100*narm);
        src_info = geometries.starn(starcoefs,narm,n);
+   elseif (strcmpi(name,'random'))
+       n = max(n,100*nmode);
+       src_info = geometries.starn(randcoefs,nmode,n);
    elseif (strcmpi(name,'smooth_plane'))
        n = max(n,1000);
        src_info = geometries.smooth_plane(nterms,n);

@@ -8,7 +8,10 @@ path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
 
-image_to_make = 3;
+mult_epscurv_runs = false;
+findsigma = false;
+
+image_to_make = 5;
 switch image_to_make
     case 1
         test_range = 12:19;
@@ -19,6 +22,27 @@ switch image_to_make
     case 3
         test_range = [59:63];
         fsavebase = 'ridf_plane2_tens';
+    case 4
+        test_range = [66:70];
+        fsavebase = 'ridf_plane2_reflect_pio8';
+        mult_epscurv_runs = true;
+        epsmake = 1e-1;
+    case 5
+        test_range = [71:75];
+        fsavebase = 'ridf_plane2_reflect_pio4';
+        mult_epscurv_runs = true;
+        epsmake = 1e-1;
+    case 6
+        test_range = [59:63];
+        fsavebase = 'ridf_plane2_tens_sigma1em1';
+        findsigma = true;
+        sigmafind = 1e-1;
+    case 7
+        test_range = [66:70];
+        fsavebase = 'ridf_plane2_reflect_pio8';
+        mult_epscurv_runs = true;
+        epsmake = 1e-3;
+
     otherwise
         test_range = [];
 end
@@ -36,6 +60,30 @@ for j = 1:length(test_range)
     end
     fnamebase = ['../trans-data/data-out/',erase(st(1).name,'.mat')];
     fname_inv = [fnamebase, '.mat'];
+    if mult_epscurv_runs
+        for jj = 1:length(st)
+            fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
+            fnametmp = [fnamebase, '.mat'];
+            Atmp = load(fnametmp);
+            if Atmp.optim_opts.eps_curv == epsmake
+                fprintf('found desired epscurv for test %d\n',test_id)
+                break
+            end
+        end
+    end
+
+    if findsigma
+        Atmp = load(fname_inv);
+        for jj = 2:length(st)
+            if isfield(Atmp,'sigma') && Atmp.sigma == sigmafind
+                break
+            else
+                fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
+                fname_inv = [fnamebase, '.mat'];
+            end
+        end
+    end
+
     fnames_inv{j} = fname_inv;
 
     wildcardstr = sprintf('../trans-data/data-out/test_%03d*trans.mat',test_id);
@@ -143,8 +191,10 @@ errs_pad(1:end-1,1:end-1) = errs;
 c1 = min(min(errs(:)),min(resmat(:))); c1 = 5*1e-3;
 c2 = max(max(errs(:)),max(resmat(:))); c2 = 1;
 
-fig = figure(1); 
+fig = figure(); 
 clf;
+
+set(gcf,'Position',[0,0,800,400])
 
 tiledlayout(1,2,"TileSpacing","tight")
 
