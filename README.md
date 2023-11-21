@@ -7,15 +7,16 @@ model for transmission data"
 ## dependencies/reproducibility
 
 - Requires the Optimization Toolbox and Image Processing Toolbox
-- Depends on the inverse-obstacle-scattering-2d MATLAB package, the
+- Uses a copy of the inverse-obstacle-scattering-2d MATLAB package, the
 specific version used is in the inverse-obstacle-scattering2d folder.
 The latest version is available at
 https://gitub.com/fastalgorithms/inverse-obstacle-scattering2d but the
 scripts here may not be compatible with the latest version.
 This package must be installed. See the instructions in the
 inverse-obstacle-scattering2d folder. 
-- Note: The paper examples were run using the files in the devel-impedance branch
-at commit https://github.com/flatironinstitute/inverse-obstacle-scattering2d/commit/861a3de5fff11ba0b31ccd4c819b731ee6137065 
+- Note: The files in the inverse-obstacle-scattering-2d folder were obtained
+from the devel-impedance branch at commit
+https://github.com/flatironinstitute/inverse-obstacle-scattering2d/commit/861a3de5fff11ba0b31ccd4c819b731ee6137065 
 
 ## generating forward data
 
