@@ -1,8 +1,9 @@
 # Impedance Examples
 
 Scripts that generate data, solve inverse problems, and make plots
-which appear in the paper "Inverse obstacle scattering with impedance as a
-model for transmission data"
+which appear in the paper "Reconstructing the shape and material
+parameters of dissipative obstacles using an
+impedance model: by Travis Askham and Carlos Borges 
 
 ## dependencies/reproducibility
 
