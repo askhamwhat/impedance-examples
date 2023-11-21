@@ -4,14 +4,19 @@
 % frequency 
 %
 
+clearvars;
+
 path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
 
 mult_epscurv_runs = false;
 findsigma = false;
+findfourier = false;
+findneumann = false;
 
-image_to_make = 5;
+image_to_make = 424;
+
 switch image_to_make
     case 1
         test_range = 12:19;
@@ -19,9 +24,11 @@ switch image_to_make
     case 2
         test_range = [51:58];
         fsavebase = 'ridf_plane2_reflect_pio8';
-    case 3
+    case 421
         test_range = [59:63];
         fsavebase = 'ridf_plane2_tens';
+        omegaplot = [5,10,40];
+        deltaplot = 61:63;
     case 4
         test_range = [66:70];
         fsavebase = 'ridf_plane2_reflect_pio8';
@@ -32,16 +39,39 @@ switch image_to_make
         fsavebase = 'ridf_plane2_reflect_pio4';
         mult_epscurv_runs = true;
         epsmake = 1e-1;
-    case 6
+    case 422
         test_range = [59:63];
         fsavebase = 'ridf_plane2_tens_sigma1em1';
         findsigma = true;
         sigmafind = 1e-1;
-    case 7
+        omegaplot = [5,10,40];
+        deltaplot = 61:63;
+    case 423
         test_range = [66:70];
         fsavebase = 'ridf_plane2_reflect_pio8';
         mult_epscurv_runs = true;
-        epsmake = 1e-3;
+        epsmake = 1e-1;
+        omegaplot = [5,10,40];
+        deltaplot = 66:2:70;
+    case 4242
+        test_range = [59:63];
+        fsavebase = 'ridf_plane2_constmodel';
+        findfourier = true;
+        omegaplot = [5,10,40];
+        deltaplot = 59:2:63;
+    case 424
+        test_range = [65,64,59:61];
+        fsavebase = 'ridf_plane2_neumann';
+        findneumann = true;
+        omegaplot = [5,10,40];
+        deltaplot = [65,59,61];
+    case 4232
+        test_range = [66:70];
+        fsavebase = 'ridf_plane2_reflect_pio8';
+        mult_epscurv_runs = true;
+        epsmake = 1e-1;
+        omegaplot = [5,10,40];
+        deltaplot = 66:2:70;
 
     otherwise
         test_range = [];
@@ -52,7 +82,13 @@ fnames_orig = {};
 
 for j = 1:length(test_range)
     test_id = test_range(j);
-    wildcardstr = sprintf('../trans-data/data-out/test_%03d*antbar*.mat',test_id);
+    if findfourier
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourier*.mat',test_id);
+    elseif findneumann
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*Neumann*.mat',test_id);
+    else
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*antbar*.mat',test_id);
+    end
     st = dir(wildcardstr);
     if isempty(st)
         warning('no output file found matching test id %d. not generated yet?','%d')
@@ -76,6 +112,7 @@ for j = 1:length(test_range)
         Atmp = load(fname_inv);
         for jj = 2:length(st)
             if isfield(Atmp,'sigma') && Atmp.sigma == sigmafind
+                fprintf('found!\n')
                 break
             else
                 fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
@@ -102,6 +139,8 @@ deltas = zeros(length(test_range),1);
 stmps = {};
 strues = {};
 
+deltas_to_plot = [];
+
 for j = 1:length(test_range)
     fname_inv = fnames_inv{j};
     load(fname_inv,'inv_data_all','fname');
@@ -118,6 +157,11 @@ for j = 1:length(test_range)
     omegas = (kinfo_use.k1:kinfo_use.dk:(kinfo_use.k1+(kinfo_use.nk-1)*kinfo_use.dk))/transparams_use.c2;
 
     strues{j} = src_info;
+
+    if any(test_range(j) == deltaplot)
+        deltas_to_plot = [deltas_to_plot,deltas(j)];
+    end
+
 end
 
 %
@@ -194,7 +238,7 @@ c2 = max(max(errs(:)),max(resmat(:))); c2 = 1;
 fig = figure(); 
 clf;
 
-set(gcf,'Position',[0,0,800,400])
+set(gcf,'Position',[0,0,1200,600])
 
 tiledlayout(1,2,"TileSpacing","tight")
 
@@ -209,7 +253,7 @@ ylabel('$\delta$')
 clim([c1,c2]);
 colormap(brewermap([],'YlGnBu'))
 title('Relative Residual of Fit')
-fontsize(gca, scale=1.5)
+fontsize(gca, scale=2)
 
 nexttile
 
@@ -222,9 +266,18 @@ clim([c1,c2]);
 colormap(brewermap([],'YlGnBu'))
 colorbar
 title('Error in Recovered Obstacle')
-fontsize(gca, scale=1.5)
+fontsize(gca, scale=2)
 
+hold on
 
-saveas(fig,[fsavebase,'_both.pdf'])
+for i = 1:length(deltas_to_plot)
+    dd = deltas_to_plot(i);
+    for j = 1:length(omegaplot)
+        ww = omegaplot(j);
+        plot(ww,dd,'rx','MarkerSize',15,'LineWidth',2)
+    end
+end
+
+saveas(fig,[fsavebase,'_both.epsc'])
 
 

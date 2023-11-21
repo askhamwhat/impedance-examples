@@ -21,66 +21,76 @@ nterms = 70;
 
 % frequency
 
-khs = [30];
-khmax = max(khs);
-khmax = 40;
+kh = 30;
+khmax = kh;
+khs = [kh];
 
 % transmission parameter values 
 
 c1 = 0.5;
 c2 = 1.0;
-rho1 = 0.7;
-rho2 = 1.2;
+rho1 = 1.2;
+rho2 = 0.7;
 
-delta_div = 1;
-delta = sqrt(3.0)*khmax*c2/delta_div;
+delta_div_list = [1,16,256];
 
-fnamebase = sprintf('imp_and_trans_plot_nterms_%d_deltadiv_%d_kh_',nterms,delta_div);
+fname= sprintf('imp_and_trans_plot_nterms_%d_kh_%d.epsc',nterms,kh);
 
-%
-bctrans = [];
-bctrans.type = 'Transmission';
-bctrans.invtype = 'o';
-bcimp = [];
-bcimp.type = 'Impedance';
-bcimp.invtype = 'o';
 
-%convert to antoine-barucq params
-omegas = khs*c2;
-rhor = rho1/rho2;
-cr = c1/c2;
-alphas = 1.0./(rhor*(1+1i*delta./omegas));
-Ns = sqrt(1+1i*delta./omegas)/cr;
-antbar_params = [];
-antbar_params.omegas = omegas;
-antbar_params.alphas = alphas;
-antbar_params.Ns = Ns;
+fig = figure(1);
+clf
 
-% transmission solver params
-nk = length(khs);
-zks = zeros(2,nk);
-as = ones(2,nk);
-bs = ones(2,nk);
+t = tiledlayout(2,length(delta_div_list),'TileSpacing','tight');
 
-zks(1,:) = khs.*Ns;
-zks(2,:) = khs;
-bs(1,:) = alphas;
+for jjj = 1:length(delta_div_list)
+    delta_div = delta_div_list(jjj);
 
-src0 = [0.01;-0.12];
-opts = [];
-opts.test_analytic = true;
-opts.src_in = src0;
-opts.verbose=true;
+    delta = sqrt(3.0)*khmax*c2/delta_div;
 
-u_meas = cell(nk,1);
+    %
+    bctrans = [];
+    bctrans.type = 'Transmission';
+    bctrans.invtype = 'o';
+    bcimp = [];
+    bcimp.type = 'Impedance';
+    bcimp.invtype = 'o';
+    
+    %convert to antoine-barucq params
+    omegas = khs*c2;
+    rhor = rho1/rho2;
+    cr = c1/c2;
+    alphas = 1.0./(rhor*(1+1i*delta./omegas));
+    Ns = sqrt(1+1i*delta./omegas)/cr;
+    antbar_params = [];
+    antbar_params.omegas = omegas;
+    antbar_params.alphas = alphas;
+    antbar_params.Ns = Ns;
+    
+    % transmission solver params
+    nk = length(khs);
+    zks = zeros(2,nk);
+    as = ones(2,nk);
+    bs = ones(2,nk);
+    
+    zks(1,:) = khs.*Ns;
+    zks(2,:) = khs;
+    bs(1,:) = alphas;
+    
+    src0 = [0.01;-0.12];
+    opts = [];
+    opts.test_analytic = true;
+    opts.src_in = src0;
+    opts.verbose=true;
+    
+    u_meas = cell(nk,1);
+    
+    src_info = geometries.smooth_plane(nterms,1000); L = src_info.L;
+    
+    x1 = linspace(-3,3,250);
+    [xx,yy] = meshgrid(x1,x1);
+    tgt = [xx(:).'; yy(:).'];
 
-src_info = geometries.smooth_plane(nterms,1000); L = src_info.L;
-
-x1 = linspace(-3,3,200);
-[xx,yy] = meshgrid(x1,x1);
-tgt = [xx(:).'; yy(:).'];
-
-for ik=1:nk
+    ik = 1;
     kh = khs(ik);
     n = ceil(nppw*L*abs(kh)/2/pi);
     n = max(n,300);
@@ -179,35 +189,36 @@ for ik=1:nk
 
     uplot_trans = reshape(uplot_trans,size(xx));
 
-    fname = [fnamebase, sprintf('%d.png',kh)];
 
-    fig = figure(1);
-    clf
-    if (ifvert)
-        t = tiledlayout(2,1,'TileSpacing','Compact');
-    else
-        t = tiledlayout(1,2,'TileSpacing','Compact');
-    end
+    x1 = src_info.xs; x1 = [x1 x1(1)];
+    y1 = src_info.ys; y1 = [y1 y1(1)];
     
-    nexttile
+    nexttile(jjj)
     h = pcolor(xx,yy,imag(uplot_trans)); set(h,'EdgeColor','none');
     clim([-2,2]);
     colormap(brewermap([],'RdBu'));
     hold on
-    plot(src_info.xs,src_info.ys,'k-','LineWidth',4);
+    plot(x1,y1,'k-','LineWidth',2);
     axis equal; axis tight;
     set(gca,"Visible","off")
 
-    nexttile
+    titlestr = sprintf('\delta = \delta_0');
+    if delta_div ~= 1
+        titlestr = sprintf('%s/%d',titlestr,delta_div);
+    end
+    title(titlestr,'Interpreter','latex')
+
+    nexttile(length(delta_div_list)+jjj)
     h = pcolor(xx,yy,imag(uplot_imp)); set(h,'EdgeColor','none');
     clim([-2,2]);
     colormap(brewermap([],'RdBu'));
     hold on
-    plot(src_info.xs,src_info.ys,'k-','LineWidth',4);
+    plot(x1,y1,'k-','LineWidth',2);
     axis equal; axis tight;
     set(gca,"Visible","off")
 
-    saveas(fig,fname);
-    
 end
 
+
+saveas(fig,fname);
+    

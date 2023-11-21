@@ -1,4 +1,4 @@
-%RECONSTRUCTIONS_DIFF_IMP
+%RECONSTRUCTIONS_VARY_DELTA
 %
 % plot the reconstructions obtained for different impedance models
 %
@@ -10,42 +10,61 @@ path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
 
-image_to_make = 7;
+clearvars 
 
+image_to_make = 4212;
+
+findsigma = false;
 mult_epscurv_runs = false;
+findfourier = false;
+findneumann = false;
+findconstfirst = false;
 
 switch image_to_make    
-    case 1
-        test_range = [12,16,19];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/128$'};
+    case 421
+        test_range = [61,62,63];
+        delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_tens';
-        omega_list = [5,10,20];
-
-    case 2
-        test_range = [51,55,58];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/128$'};
-        fsavebase = 'plane2_reflect_pio8';
-        omega_list = [5,20,40];
-
-    case 3
-        test_range = [38,40,50];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/128$'};
-        fsavebase = 'plane2_reflect_pio4';
-        omega_list = [5,20,40];
-
-    case 4
+        omega_list = [5,10,40];
+    
+    case 4212
+        test_range = [59,60,61,62];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/4$','$\delta = \delta_0/16$','$\delta= \delta_0/64$'};
+        fsavebase = 'plane2_tens';
+        omega_list = [5,10,40];
+    
+    case 4242
         test_range = [59,61,63];
         delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
-        fsavebase = 'plane2_tens';
-        omega_list = [5,20,40];
+        fsavebase = 'plane2_tens_constmodel';
+        omega_list = [5,10,40];
+        findfourier = true;
+
     
-    case 5
-        test_range = [59,60,61];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
-        fsavebase = 'plane2_tens';
-        omega_list = [5,20,40];
+    case 424
+        test_range = [65,59,61];
+        delta_list = {'$\delta = 16\delta_0$','$\delta = \delta_0$','$\delta = \delta_0/16$'};
+        fsavebase = 'plane2_tens_neumann';
+        omega_list = [5,10,40];
+        findneumann = true;
 
-    case 6
+    case 422
+        test_range = [61,62,63];
+        delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_tens_sigma_1em1';
+        omega_list = [5,10,40];
+        findsigma = true;
+        sigmafind = 1e-1;
+
+    case 4222
+        test_range = [59,61,63];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_tens_sigma_1em1';
+        omega_list = [5,10,40];
+        findsigma = true;
+        sigmafind = 1e-1;
+    
+    case 423
         test_range = [66,68,70];
         delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_pio8';
@@ -53,22 +72,14 @@ switch image_to_make
         mult_epscurv_runs = true;
         epsmake = 1e-1;
 
-    case 7
-        test_range = [71,73,75];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
-        fsavebase = 'plane2_pio4';
-        omega_list = [5,20,40];
-        mult_epscurv_runs = true;
-        epsmake = 1e-1;
-
-    case 8
+    case 4232
         test_range = [66,68,70];
         delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_pio8';
         omega_list = [5,20,40];
         mult_epscurv_runs = true;
-        epsmake = 1e-3;
-
+        epsmake = 1e-1;
+        findconstfirst = true;
 
 end
 
@@ -79,7 +90,15 @@ fnames_orig = {};
 for j = 1:length(test_range)
     test_id = test_range(j);
     
-    wildcardstr = sprintf('../trans-data/data-out/test_%03d*antbar*.mat',test_id);
+    if findfourier
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourier*.mat',test_id);
+    elseif findneumann
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*Neumann*.mat',test_id);
+    elseif findconstfirst
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*constfirst*.mat',test_id);
+    else
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*antbar*.mat',test_id);
+    end
     st = dir(wildcardstr);
     if isempty(st)
         warning('no output file found matching test id %d for abv model. not generated yet?',test_id)
@@ -98,6 +117,20 @@ for j = 1:length(test_range)
             end
         end
     end
+
+
+    if findsigma
+        for jj = 1:length(st)
+            fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
+            fnametmp = [fnamebase, '.mat'];
+            Atmp = load(fnametmp);
+            if isfield(Atmp,'sigma') && Atmp.sigma == sigmafind
+                fprintf('found!\n')
+                break
+            end
+        end
+    end
+       
 
     fnametmp
     fnames_abv{j} = fnametmp;
@@ -122,7 +155,7 @@ transparams_all = cell(length(test_range),1);
 kinfo_all =  cell(length(test_range),1);
 
 for j = 1:length(test_range)
-    fnametmp = fnames_orig{j};
+    fnametmp = fnames_orig{j};  
     load(fnametmp,'transparams_use','kinfo_use','src_info');
     omegas = (kinfo_use.k1:kinfo_use.dk:(kinfo_use.k1+(kinfo_use.nk-1)*kinfo_use.dk))/transparams_use.c2;
 
@@ -135,11 +168,12 @@ for j = 1:length(test_range)
     inv_tmp = cell2mat(inv_data_all);
     stmp1 = vertcat(inv_tmp(:).src_info_opt);
 
-    lamcfs_all{j} = zeros(3,length(stmp1));
-    for i = 1:length(stmp1)
-        lamcfs_all{j}(:,i) = stmp1(i).lamcfs;
+    if ~findfourier && ~findneumann
+        lamcfs_all{j} = zeros(3,length(stmp1));
+        for i = 1:length(stmp1)
+            lamcfs_all{j}(:,i) = stmp1(i).lamcfs;
+        end
     end
-    
     for i = 1:length(omega_list)
         [~,ii] = min(abs(omegas - omega_list(i)));
         splots{j,i} = stmp1(ii);
@@ -151,12 +185,15 @@ end
 
 set(0,'defaultTextInterpreter','latex');
 
-fac = 1.3;
+fac = 1.1;
 
 fig = figure(1);
 clf;
-set(gcf,'Position',[0,0,400,400])
-tiledlayout(3,3,'TileSpacing','Tight');
+set(gcf,'Position',[0,0,1200,600])
+tiledlayout(1,3,'TileSpacing','Tight');
+
+linestyles = {'b--','b:','b-.'};
+
 
 st = strues{1};
 xt = st.xs; yt = st.ys;
@@ -169,43 +206,52 @@ dy = (ymax-ymin)/2;
 y1 = yc-dy*fac; y2 = yc+dy*fac;
 
 for j = 1:length(test_range)
-
+    t = nexttile;
+    plot(xt,yt,'k-')
+    hold on
+    legnames = {'obstacle'};
     for i = 1:3
         sp = splots{j,i};
         xs = sp.xs; ys = sp.ys;
 
-        t = nexttile;
-
-        plot(xt,yt,'k-')
-        hold on
-        plot(xs,ys,'b-')
-        xlim([x1,x2]); ylim([y1,y2]);
-        set(gca,'XTick',[],'YTick',[]);
-        h = gca;
-        axis equal tight
-        if (j == 1)
-            title(['$\omega =$ ', sprintf('%d',omega_list(i))]);
-        end
-        if (i == 1)
-            ylabel(delta_list{j})
-        end
-
-        fontsize(gca, scale=1.5);
+        plot(xs,ys,linestyles{i},'LineWidth',2)
         
+        legnames{i+1} = strcat("\omega = ",sprintf("%d",omega_list(i)));
     end
+    
+    if (j == 1)
+        legend(legnames{:})
+    end
+
+    set(gca,'XTick',[],'YTick',[]);
+    h = gca;
+    axis equal tight
+    xlim([x1,x2]); ylim([y1,y2]);
+    fontsize(gca, scale=1.5);    
+    title(delta_list{j})    
+
 end
 
-saveas(fig,[fsavebase, '_vary_delta.pdf']);
+saveas(fig,[fsavebase, '_vary_delta.epsc']);
 %%
 
 set(0,'defaultTextInterpreter','latex');
+set(0,'defaultLineLineWidth',2)
 
 fig2 = figure(2);
 clf;
-t = tiledlayout(3,3,'TileSpacing','Tight');
-fs = 14;
+set(gcf,"Position",[0,0,800,600])
+t = tiledlayout(2,2,'TileSpacing','Tight');
+fs = 16;
 
-title(t,'recovered parameters','FontSize',fs)
+%title(t,'recovered parameters','FontSize',fs,'Interpreter','latex')
+
+linestyles = {'b-','b:','b-.','b--'};
+
+dmax = 0;
+cmax = 0;
+rmax = 0;
+crmax = 0;
 
 for j = 1:length(test_range)
 
@@ -229,59 +275,61 @@ for j = 1:length(test_range)
     crhats = zeros(nk,1);    
 
     for i = 1:length(omegas)
-        [deltahats(i),rhorhats(i),crhats(i)] = convert_beta_to_phys(lamcfs(:,i),omegas(i));
+        [deltahats(i),rhorhats(i),crhats(i)] = convert_lamabv_beta_to_phys(lamcfs(:,i),omegas(i));
     end
 
-    t = nexttile;
+    dmax = max(dmax,max(deltahats));
+    rmax = max(rmax,max(rhorhats));
+    cmax = max(cmax,max(crhats));
+    crmax = max(crmax,max(crhats.*rhorhats));
 
-    plot(omegas,deltahats,'k-o')
+    t = nexttile(1);
+
+    plot(omegas,deltahats,linestyles{j})
     hold on
-    plot(omegas,delta*ones(size(omegas)),'k--')
+    plot(omegas,delta*ones(size(omegas)),'k-')
+    ylim([0,dmax])
+    set(gca, 'YScale', 'log')
 
-    ylabel(delta_list{j},'FontSize',fs)
+    ylabel('$\delta$','FontSize',fs)
+    
+    t = nexttile(2);
+    
+    plot(omegas,rhorhats,linestyles{j})
+    hold on
+    plot(omegas,rhor*ones(size(omegas)),'k-')
+    ylim([0,rmax])
+    ylabel('$\rho_r$','FontSize',fs)
+    
+    t = nexttile(3);
+    
+    plot(omegas,crhats,linestyles{j})
+    hold on
+    plot(omegas,cr*ones(size(omegas)),'k-')
+    ylim([0,cmax])
+    ylabel('$c_r$','FontSize',fs)
+    xlabel('$\omega$','FontSize',fs)
 
-    if (j == 1)
-        title('$\delta$','FontSize',fs)
+    t = nexttile(4);
+
+    if j == 1
+        plot(omegas,rhor*cr*ones(size(omegas)),'k-')
+        hold on
     end
-    
-    t = nexttile;
-    
-    plot(omegas,rhorhats,'k-o')
-    hold on
-    plot(omegas,rhor*ones(size(omegas)),'k--')
-    ylim([0,2])
 
-    if (j == 1)
-        title('$\rho_r$','FontSize',fs)
+    plot(omegas,rhorhats.*crhats,linestyles{j})
+    
+    ylim([0,crmax])
+    ylabel('$\rho_r c_r$','FontSize',fs)
+    xlabel('$\omega$','FontSize',fs)
+
+    if (j == length(test_range))
+        
+        legend('actual value',delta_list{:},'Interpreter','latex')
     end    
     
-    t = nexttile;
-    
-    plot(omegas,crhats,'k-o')
-    hold on
-    plot(omegas,cr*ones(size(omegas)),'k--')
-    ylim([0,2])
-
-    if (j == 1)
-        title('$c_r$','FontSize',fs)
-    end    
-    
-end
-
-saveas(fig2,[fsavebase, '_imp_params.pdf']);
-
-function [delta,rhor,cr] = convert_beta_to_phys(betas,omega)
-%
-% sqrt(1-1i*delta/omega)/(rhor*cr*sqrt(1+delta^2/omega^2)) = ...
-%              betas(2)*sqrt(1-1i*betas(1))
-% (1-1i*delta/omega)/(rhor*(1+delta^2/omega^2)) = betas(3)*(1-1i*betas(1))
-%
-% delta = omega*betas(1)
-% rhor = 1/(betas(3)*(1+delta^2/omega^2))
-% cr = 1/(rhor*betas(2)*sqrt(1+delta^2/omega^2)) 
-
-delta = omega*betas(1);
-rhor = 1/(betas(3)*(1+betas(1)^2));
-cr = 1/(rhor*betas(2)*sqrt(1+delta^2/omega^2));
 
 end
+
+saveas(fig2,[fsavebase, '_imp_params.epsc']);
+

@@ -292,7 +292,39 @@ switch test_id
         % use the default delta which is just in the 
         % suggested asymptotic regime in Antoine Barucq paper
         
+    case 20
         
+        % complicated plane, trying more frequencies
+        %
+        % smooth plane with transmission defaults
+
+%          NOTE: in the AB notation b1 = delta/omega, 
+%                     b2 = 1/(rho_r*c_r*sqrt(1+delta^2/omega^2)), and
+%                     b3 = 1/(rho_r*(1+delta^2/omega^2))        
+        geoinfo.name = 'starfish';
+        impedance_type = 'antbar3';
+        geoinfo.narm = 5;
+        geoinfo.receptor_shape = 'ellipse';
+        kinfo.k1 = 1;
+        kinfo.dk = 0.5;
+        kinfo.nk = 59;
+        c1 = 0.5;
+        c2 = 1.0;
+        rho1 = 1.2;
+        rho2 = 0.7;
+        rhor = rho1/rho2;
+        cr = c1/c2;
+        khmax = kinfo.k1+kinfo.dk*(kinfo.nk-1);
+        delta = sqrt(3)*khmax;
+        lamcfs = cell(3,1);
+        lamcfs{1} = @(kh) delta/(kh*c2); % delta/omega
+        lamcfs{2} = @(kh) 1/(rhor*cr*sqrt(1+(delta/(kh*c2))^2)); 
+        lamcfs{3} = @(kh) 1/(rhor*(1+(delta/(kh*c2))^2));
+        
+        % use the default delta which is just in the 
+        % suggested asymptotic regime in Antoine Barucq paper
+        
+
 
     otherwise
         warning('unknown test, doing nothing');

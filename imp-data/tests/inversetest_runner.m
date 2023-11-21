@@ -1,5 +1,6 @@
 function fnameout = inversetest_runner(test_id,ifforce_constkappa,...
-    ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,sigma)
+  ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,sigma, ...
+  ifconst_first)
 %INVERSETEST_RUNNER a relatively stable selection of optimization
 % parameters
 %
@@ -28,6 +29,9 @@ if nargin < 8 || isempty(eps_curv)
 end
 if nargin < 9 || isempty(sigma)
     sigma = 0;
+end
+if nargin < 10 || isempty(ifconst_first)
+    ifconst_first = false;
 end
 
 
@@ -135,14 +139,32 @@ end
     
 %
 
-[inv_data_all,~] = rla.rla_inverse_solver(u_meas,bc,...
+if (ifconst_first)
+    opts0 = opts;
+    opts0.impedance_type = 'fourier';
+    opts0.ncoeff_impedance_mult = 0;
+
+    [inv_data_all0,~] = rla.rla_inverse_solver(u_meas,bc,...
+                          optim_opts,opts0,src_init,lam_init);
+    
+    src_init = inv_data_all0{end}.src_info_all{end};
+
+    [inv_data_all,~] = rla.rla_inverse_solver(u_meas,bc,...
                           optim_opts,opts,src_init,lam_init);
+    
+else
+    [inv_data_all,~] = rla.rla_inverse_solver(u_meas,bc,...
+                          optim_opts,opts,src_init,lam_init);
+end
 
 phasestr = 'phaseoff';
 if (opts.constphasefactor)
     phasestr = 'phaseon';
 end
 fnameout = [fnamebase, '_', bc.invtype, '_', opts.impedance_type, '_', phasestr, '_', char(datetime), '.mat'];                      
-save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts');
 
+if (ifconst_first)
+    save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts','inv_data_all0');
+else
+    save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts');
 end

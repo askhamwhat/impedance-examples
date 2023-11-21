@@ -6,9 +6,10 @@ model for transmission data"
 
 ## dependencies/reproducibility
 
-Depends on the inverse-obstacle-scattering-2d MATLAB package, which
+- Requires the Optimization Toolbox and Image Processing Toolbox
+- Depends on the inverse-obstacle-scattering-2d MATLAB package, which
 is available at https://gitub.com/fastalgorithms/inverse-obstacle-scattering2d.
-The paper examples were run using the files in the devel-impedance branch
+- The paper examples were run using the files in the devel-impedance branch
 at commit https://github.com/flatironinstitute/inverse-obstacle-scattering2d/commit/861a3de5fff11ba0b31ccd4c819b731ee6137065
 
 ## generating forward data
@@ -50,7 +51,9 @@ Tests for version 1 of paper:
 - Section 4.1 (impedance): for each data set, do
 inversetest_runner(test_id) [ABV model],
 inversetest_runner(test_id,true,[],[],[],true) [CH model with constraints],
-and inversetest_runner(test_id,[],[],true) [Fourier model]
+and inversetest_runner(test_id,[],[],true) [Fourier model].
+Also run inversetest_runner(16,[],[],[],[],[],[],[],[],true) to
+run the constant model initializer example.
 - Section 4.2.1 (transmission): for each data set, do
 inversetest_runner(test_id)
 - Section 4.2.2 (transmission): for each data set, do
@@ -58,7 +61,9 @@ inversetest_runner(test_id,[],[],[],[],[],[],[],1e-1)
 - Section 4.2.3 (transmission): for each data set, do
 inversetest_runner(test_id)
 - Section 4.2.4 (transmission): for each data set, do
-inversetest_neumann_runner(test_id)
+inversetest_neumann_runner(test_id) [does the neumann model] and
+inversettest_runner(test_id,[],[],true,[],[],[],[],[],[],0)
+[does the constant impedance model]
 
 ## making plots
 
@@ -68,16 +73,22 @@ above (slow).
 
 Plots for version 1 of paper:
 - Introduction: see scattering_plots_imp_and_trans.m
-- Section 4.1: see reconstructions_diff_imp.m
+- Section 4.1: see reconstructions_diff_imp.m and
+reconstructions_lamabv_withconstinitial.m. For the latter,
+you'll have to edit the script according to the instructions
+at the top.
 - Section 4.2.1: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=421
-and run the script. 
+and run the script to get the reconstructions and error plots
+as in the paper.
+Also set image_to_make=4212 and run reconstructions_vary_delta.m
+to get the recovered parameters as in the paper.
 - Section 4.2.2: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=422
 and run the script. 
 - Section 4.2.3: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=423
-and run the script. 
+and run the script.
 - Section 4.2.4: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=424
-and run the script. 
+and run the script and image_to_make=4242 and run the script. 

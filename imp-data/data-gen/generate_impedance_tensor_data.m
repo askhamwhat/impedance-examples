@@ -36,6 +36,9 @@ function [fname] = generate_impedance_tensor_data(test_id,lamcfs, ...
 %       geoinfo.amp - float, (0.3) if starfish domain, amplitude that arms
 %                           deviate from rad.
 %       geoinfo.rad- float, (1.0) if starfish domain, radius of circle
+%       geoinfo.receptor_shape ('circle') shape where receptors are placed,
+%               defaults to circle ofradius 10. 'ellipse' places them on a
+%               ellipse with semi-major and semi-minor axes 16 and 8.
 %
 %   kinfo - struct, specify the frequencies to generate data for 
 %       kinfo.k1 - float (1.0), first k
@@ -79,6 +82,7 @@ amp = 0.3;
 nrecfactor = 10;
 nincfactor = 10;
 nppw = 20;
+receptor_shape = 'circle';
 
 % defaults for simple plane
 nterms = 30;
@@ -113,9 +117,13 @@ end
 if (isfield(geoinfo,'nmode'))
     nmode = geoinfo.nmode;
 end
+if (isfield(geoinfo,'receptor_shape'))
+    receptor_shape = geoinfo.receptor_shape;
+end
 
 geoinfo_use = struct('name',name,'narm',narm,'amp',amp,'rad',rad,...
-    'nrecfactor',nrecfactor,'nincfactor',nincfactor,'nppw',nppw,'nmode',nmode);
+    'nrecfactor',nrecfactor,'nincfactor',nincfactor,'nppw',nppw,...
+    'nmode',nmode,'receptor_shape',receptor_shape);
 
 fname_geo = name;
 if (strcmpi(name,'starfish'))
@@ -253,8 +261,17 @@ for ik=1:nk
     [t_tgt_grid,t_dir_grid] = meshgrid(t_tgt,t_dir);
     t_tgt_grid = t_tgt_grid(:);
     t_dir_grid = t_dir_grid(:);
-    xtgt = r_tgt*cos(t_tgt_grid);
-    ytgt = r_tgt*sin(t_tgt_grid);
+
+    if strcmpi(receptor_shape,'circle')
+        xtgt = r_tgt*cos(t_tgt_grid);
+        ytgt = r_tgt*sin(t_tgt_grid);
+    elseif strcmpi(receptor_shape,'ellipse')
+        xtgt = 8*cos(t_tgt_grid);
+        ytgt = 16*sin(t_tgt_grid);
+    else
+        error('unknown receptor_shape %s',receptor_shape)
+    end
+
     tgt   = [ xtgt'; ytgt'];
 
     sensor_info = [];

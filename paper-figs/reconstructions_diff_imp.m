@@ -68,10 +68,11 @@ end
 strues = {};
 splots = {};
 
-omega_lists = cell(3,1);
-omega_lists{1} = [2,5,10];
+omega_lists = cell(4,1);
+omega_lists{1} = [5,10,20];
 omega_lists{2} = [5,10,20];
 omega_lists{3} = [5,10,40];
+omega_lists{4} = [5,10,20];
 
 for j = 1:length(test_range)
     fnametmp = fnames_orig{j};
@@ -112,13 +113,16 @@ end
 
 set(0,'defaultTextInterpreter','latex');
 
-fac = 1.3;
+linestyles = {'b--','b:','b-.'};
+
+fac = 1.1;
 
 for j = 1:length(test_range)
     fig = figure(j);
     clf;
+    set(gcf,'Position',[0,0,1200,600])
 
-    tiledlayout(3,3,'TileSpacing','Tight');
+    tiledlayout(1,3,'TileSpacing','Tight');
     st = strues{j};
     xt = st.xs; yt = st.ys;
 
@@ -132,30 +136,36 @@ for j = 1:length(test_range)
     omega_list = omega_lists{j};
 
     for i = 1:3
+
+        t = nexttile;
+        plot(xt,yt,'k-','LineWidth',2)
+        hold on
+        
+        legnames = {'obstacle'};
+
         for l = 1:3
             sp = splots{j}{i,l};
             xs = sp.xs; ys = sp.ys;
 
-            t = nexttile;
-
-            plot(xt,yt,'k-')
-            hold on
-            plot(xs,ys,'b-')
-            xlim([x1,x2]); ylim([y1,y2]);
+            plot(xs,ys,linestyles{l},'LineWidth',2)
             set(gca,'XTick',[],'YTick',[]);
             h = gca;
             axis equal tight
-            if (i == 1)
-                title(['$\omega =$ ', sprintf('%d',omega_list(l))]);
-            end
-            if (l == 1)
-                ylabel(imp_list{i})
-            end
-
-            fontsize(gca,scale=1.5);
+            legnames{l+1} = strcat("\omega = ", sprintf("%d",omega_list(l)));
             
         end
+
+        if(i == 1)
+            legend(legnames{:})
+        end
+        xlim([x1,x2]); ylim([y1,y2]);
+
+        title(imp_list{i})
+
+        fontsize(gca,scale=1.5);
+
     end
 
-    saveas(fig,[geo_names{j}, '_diff_imp_models.pdf']);
+
+    saveas(fig,[geo_names{j}, '_diff_imp_models.epsc']);
 end
