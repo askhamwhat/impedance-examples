@@ -3,10 +3,11 @@
 Scripts that generate data, solve inverse problems, and make plots
 which appear in the paper "Reconstructing the shape and material
 parameters of dissipative obstacles using an
-impedance model: by Travis Askham and Carlos Borges 
+impedance model" by Travis Askham and Carlos Borges 
 
 ## dependencies/reproducibility
 
+- The examples were run using MATLAB R2023b
 - Requires the Optimization Toolbox and Image Processing Toolbox
 - Uses a copy of the inverse-obstacle-scattering-2d MATLAB package, the
 specific version used is in the inverse-obstacle-scattering2d folder.
