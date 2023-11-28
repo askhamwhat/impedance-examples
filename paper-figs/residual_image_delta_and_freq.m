@@ -15,7 +15,7 @@ findsigma = false;
 findfourier = false;
 findneumann = false;
 
-image_to_make = 424;
+image_to_make = 4242;
 
 switch image_to_make
     case 1
@@ -252,7 +252,7 @@ xlabel('$\omega$')
 ylabel('$\delta$')
 clim([c1,c2]);
 colormap(brewermap([],'YlGnBu'))
-title('Relative Residual of Fit')
+title('Relative Residual --- $R_\omega(\hat{\Gamma},\hat{\lambda})$')
 fontsize(gca, scale=2)
 
 nexttile
@@ -265,7 +265,7 @@ xlabel('$\omega$')
 clim([c1,c2]);
 colormap(brewermap([],'YlGnBu'))
 colorbar
-title('Error in Recovered Obstacle')
+title('Error in Obstacle --- $E(\hat{\Gamma})$') 
 fontsize(gca, scale=2)
 
 hold on

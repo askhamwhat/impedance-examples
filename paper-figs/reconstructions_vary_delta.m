@@ -57,8 +57,8 @@ switch image_to_make
         sigmafind = 1e-1;
 
     case 4222
-        test_range = [59,61,63];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        test_range = [59,60,61,62];
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/4$','$\delta = \delta_0/16$','$\delta= \delta_0/64$'};
         fsavebase = 'plane2_tens_sigma_1em1';
         omega_list = [5,10,40];
         findsigma = true;
@@ -291,7 +291,7 @@ for j = 1:length(test_range)
     ylim([0,dmax])
     set(gca, 'YScale', 'log')
 
-    ylabel('$\delta$','FontSize',fs)
+    ylabel('$\hat{\delta}$','FontSize',fs)
     
     t = nexttile(2);
     
@@ -299,7 +299,7 @@ for j = 1:length(test_range)
     hold on
     plot(omegas,rhor*ones(size(omegas)),'k-')
     ylim([0,rmax])
-    ylabel('$\rho_r$','FontSize',fs)
+    ylabel('$\hat{\rho}_r$','FontSize',fs)
     
     t = nexttile(3);
     
@@ -307,7 +307,7 @@ for j = 1:length(test_range)
     hold on
     plot(omegas,cr*ones(size(omegas)),'k-')
     ylim([0,cmax])
-    ylabel('$c_r$','FontSize',fs)
+    ylabel('$\hat{c}_r$','FontSize',fs)
     xlabel('$\omega$','FontSize',fs)
 
     t = nexttile(4);
@@ -320,7 +320,7 @@ for j = 1:length(test_range)
     plot(omegas,rhorhats.*crhats,linestyles{j})
     
     ylim([0,crmax])
-    ylabel('$\rho_r c_r$','FontSize',fs)
+    ylabel('$\hat{\rho}_r \hat{c}_r$','FontSize',fs)
     xlabel('$\omega$','FontSize',fs)
 
     if (j == length(test_range))
