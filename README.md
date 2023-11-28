@@ -98,4 +98,4 @@ residual_image_delta_and_freq.m. In each, set image_to_make=423
 and run the script.
 - Section 4.2.4: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=424
-and run the script and image_to_make=4242 and run the script. 
+and run the script and set image_to_make=4242 and run the script. 
