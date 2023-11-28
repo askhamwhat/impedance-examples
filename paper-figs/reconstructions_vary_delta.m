@@ -1,10 +1,7 @@
 %RECONSTRUCTIONS_VARY_DELTA
 %
-% plot the reconstructions obtained for different impedance models
-%
-% test_id = 12 standard dissipation plane 2 (omegamax = 40)
-% test_id = 3 standard dissipation plane 1 (omegamax = 30)
-% test_id = 20 standard dissipation starfish (omegamax = 10)
+% plot the reconstructions obtained as the amount of dissipation varies
+% plot the material parameters obtained for different dissipation levels
 
 path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
@@ -12,9 +9,10 @@ addpath(genpath_ex(path_to_ios2d));
 
 clearvars 
 
-image_to_make = 4212;
+image_to_make = 42;
 
 findsigma = false;
+
 mult_epscurv_runs = false;
 findfourier = false;
 findneumann = false;
@@ -71,15 +69,6 @@ switch image_to_make
         omega_list = [5,20,40];
         mult_epscurv_runs = true;
         epsmake = 1e-1;
-
-    case 4232
-        test_range = [66,68,70];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
-        fsavebase = 'plane2_pio8';
-        omega_list = [5,20,40];
-        mult_epscurv_runs = true;
-        epsmake = 1e-1;
-        findconstfirst = true;
 
 end
 

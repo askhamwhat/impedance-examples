@@ -15,30 +15,14 @@ findsigma = false;
 findfourier = false;
 findneumann = false;
 
-image_to_make = 4242;
+image_to_make = 423;
 
 switch image_to_make
-    case 1
-        test_range = 12:19;
-        fsavebase = 'ridf_plane2_tens';
-    case 2
-        test_range = [51:58];
-        fsavebase = 'ridf_plane2_reflect_pio8';
     case 421
         test_range = [59:63];
         fsavebase = 'ridf_plane2_tens';
         omegaplot = [5,10,40];
         deltaplot = 61:63;
-    case 4
-        test_range = [66:70];
-        fsavebase = 'ridf_plane2_reflect_pio8';
-        mult_epscurv_runs = true;
-        epsmake = 1e-1;
-    case 5
-        test_range = [71:75];
-        fsavebase = 'ridf_plane2_reflect_pio4';
-        mult_epscurv_runs = true;
-        epsmake = 1e-1;
     case 422
         test_range = [59:63];
         fsavebase = 'ridf_plane2_tens_sigma1em1';
