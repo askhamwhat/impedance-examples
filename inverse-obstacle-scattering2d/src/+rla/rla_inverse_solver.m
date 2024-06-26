@@ -184,7 +184,7 @@ function [inv_data_all,src_info_out] = rla_inverse_solver(u_meas,bc,...
                     opts.impedance_type,u_meas{ik_list(1)}.kh);
                 src_info.lambda = ckcoefs(1) + ckcoefs(2)*src_info.H(:);
            elseif strcmpi(opts.impedance_type,'antbar3')
-                src_info.lamcfs = [0;1;1];
+                src_info.lamcfs = [0;1;0];
                 ckcoefs = constkappa_models_convert(src_info.lamcfs,...
                     opts.impedance_type,u_meas{ik_list(1)}.kh);
                 src_info.lambda = ckcoefs(1) + ckcoefs(2)*src_info.H(:);
