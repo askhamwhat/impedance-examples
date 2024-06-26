@@ -31,7 +31,21 @@ for j = 1:length(test_range)
         warning('no output file found matching test id %d for abv model. not generated yet?',test_id)
         return
     end
-    fnamebase = ['../imp-data/data-out/',erase(st(end).name,'.mat')];
+
+    % filter out the constfirst experiment
+    notfound = true;
+    for jj = 1:length(st)
+        if ~contains(st(jj).name,'constfirst')
+            fnamebase = ['../imp-data/data-out/',erase(st(jj).name,'.mat')];
+            notfound = false;
+            break
+        end
+    end
+    if notfound
+        warning('no output file found matching test id %d for abv model. not generated yet?',test_id)
+        return
+    end
+    
     fnametmp = [fnamebase, '.mat'];
     fnames_abv{j} = fnametmp;
 
@@ -113,6 +127,7 @@ end
 %%
 
 set(0,'defaultTextInterpreter','latex');
+set(0,'defaultLegendInterpreter','latex');
 
 linestyles = {'r--','m:','b-.'};
 
@@ -152,12 +167,12 @@ for j = 1:length(test_range)
             set(gca,'XTick',[],'YTick',[]);
             h = gca;
             axis equal tight
-            legnames{l+1} = strcat("\omega = ", sprintf("%d",omega_list(l)));
+            legnames{l+1} = strcat("$\omega = ", sprintf("%d",omega_list(l)),"$");
             
         end
 
         if(i == 1)
-            legend(legnames{:})
+            legend(legnames{:},'Interpreter','latex')
         end
         xlim([x1,x2]); ylim([y1,y2]);
 

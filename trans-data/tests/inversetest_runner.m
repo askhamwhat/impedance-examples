@@ -1,6 +1,6 @@
 function fnameout = inversetest_runner(test_id,ifforce_constkappa,...
     ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,...
-    sigma,ifconst_first,ncoeff_impedance_mult,curvgrad,curvscal,maxit)
+    sigma,ifconst_first,ncoeff_impedance_mult)
 %INVERSETEST_RUNNER a relatively stable selection of optimization
 % parameters
 %
@@ -35,15 +35,6 @@ if nargin < 10 || isempty(ifconst_first)
 end
 if nargin < 11 || isempty(ncoeff_impedance_mult)
     ncoeff_impedance_mult = 0.5;
-end
-if nargin < 12 || isempty(curvgrad)
-    curvgrad = false;
-end
-if nargin < 13 || isempty(curvscal)
-    curvscal = 1;
-end
-if nargin < 14 || isempty(maxit)
-    maxit = 40;
 end
 
 % select data set to load and some overrides...
@@ -127,7 +118,7 @@ if strcmpi(impedance_type,'fourier')
 end
 optim_opts.eps_res = 1e-4;
 optim_opts.eps_upd = 1e-4;
-optim_opts.maxit = maxit;
+optim_opts.maxit = 40;
 optim_opts.ninner = ninner;
 optim_opts.stepfac = 8;
 optim_opts.maxit_filter = 3;
@@ -136,9 +127,6 @@ opts.constphasefactor = false;
 if ifphaseon
     opts.constphasefactor = true;
 end
-
-opts.curvgrad = curvgrad;
-opts.curvscal = curvscal;
 
 % modify some options for certain tests 
 
@@ -164,6 +152,18 @@ end
     
 %
 
+constfirst_str = "";
+if (ifconst_first)
+    constfirst_str = "constfirst";
+end
+
+const_str = "";
+if (ifforce_fourier && ncoeff_impedance_mult == 0)
+    const_str = "constmodel";
+end
+sigstring = "sigma" + sprintf("%.1e",sigma);
+fnameout = fnamebase + "_" + bc.invtype + "_" + opts.impedance_type + const_str + "_" + constfirst_str + "_" + sigstring + "_" + string(datetime) + ".mat"
+
 
 if (ifconst_first)
     opts0 = opts;
@@ -184,22 +184,6 @@ else
                           optim_opts,opts,src_init,lam_init);
 end
 
-
-phasestr = 'phaseoff';
-if (opts.constphasefactor)
-    phasestr = 'phaseon';
-end
-
-constfirst_str = "";
-if (ifconst_first)
-    constfirst_str = "constfirst";
-end
-if curvgrad
-    constfirst_str = constfirst_str + "curvgrad";
-end
-
-sigstring = "sigma" + sprintf("%.1e",sigma);
-fnameout = fnamebase + "_" + bc.invtype + "_" + opts.impedance_type + "_" + constfirst_str + "_" + sigstring + "_" + string(datetime) + ".mat";
 save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts','sigma');
 
 end

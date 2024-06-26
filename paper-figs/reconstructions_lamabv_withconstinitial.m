@@ -7,7 +7,9 @@
 
 clearvars
 
-A = load('../imp-data/data-out/test_016_tensdata_impck_io_antbar3_phaseoff_25-Jun-2024 23:20:56.mat');
+wildcardstr = '../imp-data/data-out/test_016*constfirst*.mat';
+st = dir(wildcardstr);
+A = load(['../imp-data/data-out/', st(1).name]);
 B = load('../imp-data/data-out/test_016_tensdata_impck.mat');
 
 %%

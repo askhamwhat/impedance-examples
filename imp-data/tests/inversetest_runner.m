@@ -143,7 +143,18 @@ else
     src_init = [];
     lam_init = A.lamcfs;
 end
-    
+
+constfirst_str = "";
+if (ifconst_first)
+    constfirst_str = "constfirst";
+end
+
+const_str = "";
+if (ifforce_fourier && ncoeff_impedance_mult == 0)
+    const_str = "constmodel";
+end
+sigstring = "sigma" + sprintf("%.1e",sigma);
+fnameout = fnamebase + "_" + bc.invtype + "_" + opts.impedance_type + const_str + "_" + constfirst_str + "_" + sigstring + "_" + string(datetime) + ".mat"
 %
 
 if (ifconst_first)
@@ -170,11 +181,6 @@ else
                           optim_opts,opts,src_init,lam_init);
 end
 
-phasestr = 'phaseoff';
-if (opts.constphasefactor)
-    phasestr = 'phaseon';
-end
-fnameout = [fnamebase, '_', bc.invtype, '_', opts.impedance_type, '_', phasestr, '_', char(datetime), '.mat'];                      
 
 if (ifconst_first)
     save(fnameout,'inv_data_all','fname','-v7.3','bc','optim_opts','opts','inv_data_all0');

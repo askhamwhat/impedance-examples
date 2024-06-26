@@ -11,7 +11,7 @@ run('../chunkie/startup.m');
 
 clearvars 
 
-image_to_make = 43;
+image_to_make = 4242;
 
 findsigma = false;
 
@@ -20,6 +20,7 @@ findfourier = false;
 findneumann = false;
 findconstfirst = false;
 findbest = false;
+findconstmodel = false;
 
 switch image_to_make    
     case 421
@@ -27,6 +28,12 @@ switch image_to_make
         delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_tens';
         omega_list = [5,10,40];
+    case 421999
+        test_range = [61,62,63];
+        delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
+        fsavebase = 'plane2_fourier_tens';
+        omega_list = [5,10,40];
+        findfourier = true;
     
     case 4212
         test_range = [59,60,61,62];
@@ -35,11 +42,11 @@ switch image_to_make
         omega_list = [5,10,40];
     
     case 4242
-        test_range = [59,61,63];
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        test_range = [61,62,63];
+        delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_tens_constmodel';
         omega_list = [5,10,40];
-        findfourier = true;
+        findconstmodel = true;
 
     
     case 424
@@ -112,6 +119,8 @@ for j = 1:length(test_range)
     
     if findfourier
         wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourier*.mat',test_id);
+    elseif findconstmodel
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourierconstmodel*.mat',test_id);
     elseif findneumann
         wildcardstr = sprintf('../trans-data/data-out/test_%03d*Neumann*.mat',test_id);
     elseif findconstfirst
@@ -187,6 +196,8 @@ lamcfs_all = cell(length(test_range),1);
 transparams_all = cell(length(test_range),1);
 kinfo_all =  cell(length(test_range),1);
 
+fnames_abv{:}
+
 for j = 1:length(test_range)
     fnametmp = fnames_orig{j};  
     load(fnametmp,'transparams_use','kinfo_use','src_info');
@@ -208,7 +219,7 @@ for j = 1:length(test_range)
     inv_tmp = cell2mat(inv_data_all);
     stmp1 = vertcat(inv_tmp(:).src_info_opt);
 
-    if ~findfourier && ~findneumann
+    if ~findfourier && ~findneumann && ~findconstmodel
         lamcfs_all{j} = zeros(3,length(stmp1));
         for i = 1:length(stmp1)
             lamcfs_all{j}(:,i) = stmp1(i).lamcfs;
@@ -225,6 +236,7 @@ end
 % this section plots the reconstructions 
 
 set(0,'defaultTextInterpreter','latex');
+set(0,'defaultLegendInterpreter','latex');
 
 fac = 1.1;
 
@@ -271,7 +283,7 @@ for j = 1:length(test_range)
 
         plot(xs,ys,linestyles{i},'LineWidth',2)
         
-        legnames{i+2} = strcat("\omega = ",sprintf("%d",omega_list(i)));
+        legnames{i+2} = strcat("$\omega = ",sprintf("%d",omega_list(i)),"$");
     end
     
     if (j == length(test_range))
@@ -401,6 +413,7 @@ saveas(fig2,[fsavebase, '_imp_params.epsc']);
 % plot a zoom of the corners
 
 set(0,'defaultTextInterpreter','latex');
+set(0,'defaultLegendInterpreter','latex');
 
 fac = 1.1;
 
@@ -439,7 +452,7 @@ for j = 1:length(test_range)
 
         plot(xs,ys,linestyles{i},'LineWidth',2)
         
-        legnames{i+1} = strcat("\omega = ",sprintf("%d",omega_list(i)));
+        legnames{i+1} = strcat("$\omega = ",sprintf("%d",omega_list(i)),"$");
     end
     
     if (j == length(test_range))

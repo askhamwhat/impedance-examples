@@ -17,8 +17,9 @@ findsigma = false;
 findfourier = false;
 findneumann = false;
 findbest = false;
+findconstmodel = false;
 
-image_to_make = 433;
+image_to_make = 4242;
 
 switch image_to_make
     case 421
@@ -26,6 +27,12 @@ switch image_to_make
         fsavebase = 'ridf_plane2_tens';
         omegaplot = [5,10,40];
         deltaplot = 61:63;
+    case 421999
+        test_range = [59:63];
+        fsavebase = 'ridf_plane2_fourier';
+        omegaplot = [5,10,40];
+        deltaplot = 61:63;
+        findfourier = true;
     case 422
         test_range = [59:63];
         fsavebase = 'ridf_plane2_tens_sigma1em1';
@@ -43,9 +50,9 @@ switch image_to_make
     case 4242
         test_range = [59:63];
         fsavebase = 'ridf_plane2_constmodel';
-        findfourier = true;
+        findconstmodel = true;
         omegaplot = [5,10,40];
-        deltaplot = 59:2:63;
+        deltaplot = 61:63;
     case 424
         test_range = [65,64,59:61];
         fsavebase = 'ridf_plane2_neumann';
@@ -88,6 +95,8 @@ for j = 1:length(test_range)
     test_id = test_range(j);
     if findfourier
         wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourier*.mat',test_id);
+    elseif findconstmodel
+        wildcardstr = sprintf('../trans-data/data-out/test_%03d*fourierconstmodel*.mat',test_id);
     elseif findneumann
         wildcardstr = sprintf('../trans-data/data-out/test_%03d*Neumann*.mat',test_id);
     else
