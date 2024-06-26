@@ -7,6 +7,7 @@
 % test_id = 19 standard dissipation random (omegamax = 20)
 % test_id = 16 standard dissipation starfish (omegamax = 30)
 
+clearvars
 path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
@@ -113,7 +114,7 @@ end
 
 set(0,'defaultTextInterpreter','latex');
 
-linestyles = {'b--','b:','b-.'};
+linestyles = {'r--','m:','b-.'};
 
 fac = 1.1;
 

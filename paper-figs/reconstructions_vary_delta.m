@@ -6,10 +6,12 @@
 path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
+path_to_chunkie = '../chunkie/';
+run('../chunkie/startup.m');
 
 clearvars 
 
-image_to_make = 42;
+image_to_make = 43;
 
 findsigma = false;
 
@@ -17,6 +19,7 @@ mult_epscurv_runs = false;
 findfourier = false;
 findneumann = false;
 findconstfirst = false;
+findbest = false;
 
 switch image_to_make    
     case 421
@@ -70,6 +73,34 @@ switch image_to_make
         mult_epscurv_runs = true;
         epsmake = 1e-1;
 
+    case 43
+        test_range = 71:2:75;
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'polygon_tens';
+        omega_list = [5,20,40];
+        mult_epscurv_runs = true;
+        %epsmake = 5e-2;
+        findbest = true; % finds best out of multiple epscurv based on final residual
+    
+    case 433
+        test_range = 71:2:75;
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        fsavebase = 'polygon_tens_constmodel';
+        omega_list = [5,20,40];
+        mult_epscurv_runs = true;
+        findfourier = true;
+        %epsmake = 1e-1;
+        findbest = true; % finds best out of multiple epscurv based on final residual
+    
+    case 432
+        test_range = 71:1:74;
+        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/4$','$\delta = \delta_0/16$','$\delta = \delta_0/64$'};
+        fsavebase = 'polygon_tens';
+        omega_list = [5,20,40];
+        mult_epscurv_runs = true;
+        %epsmake = 1e-1;
+        findbest = true; % finds best out of multiple epscurv based on final residual
+
 end
 
 
@@ -96,17 +127,32 @@ for j = 1:length(test_range)
     fnamebase = ['../trans-data/data-out/',erase(st(1).name,'.mat')];
     fnametmp = [fnamebase, '.mat'];
 
+    rescomp = Inf;
     if mult_epscurv_runs
         for jj = 1:length(st)
-            fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
-            fnametmp = [fnamebase, '.mat'];
-            Atmp = load(fnametmp);
-            if Atmp.optim_opts.eps_curv == epsmake
+            fnamebase0 = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
+            fnametmp0 = [fnamebase0, '.mat'];
+            Atmp0 = load(fnametmp0);
+            if findbest 
+                restmp = Atmp0.inv_data_all{end}.res_opt;
+                if restmp < rescomp
+                    rescomp = restmp;
+                    Atmp = Atmp0;
+                    fnamebase = fnamebase0;
+                    fnametmp = fnametmp0;
+                end
+            elseif Atmp0.optim_opts.eps_curv == epsmake
+                Atmp = Atmp0;
+                fnamebase = fnamebase0;
+                fnametmp = fnametmp0;
+                fprintf('found desired epscurv for test %d\n',test_id)
                 break
             end
+            
         end
-    end
 
+        Atmp.optim_opts.eps_curv
+    end
 
     if findsigma
         for jj = 1:length(st)
@@ -120,8 +166,6 @@ for j = 1:length(test_range)
         end
     end
        
-
-    fnametmp
     fnames_abv{j} = fnametmp;
 
     wildcardstr = sprintf('../trans-data/data-out/test_%03d*trans.mat',test_id);
@@ -148,6 +192,13 @@ for j = 1:length(test_range)
     load(fnametmp,'transparams_use','kinfo_use','src_info');
     omegas = (kinfo_use.k1:kinfo_use.dk:(kinfo_use.k1+(kinfo_use.nk-1)*kinfo_use.dk))/transparams_use.c2;
 
+    if contains(fsavebase,'polygon')
+        % true object is saved as a chunkgraph
+        src_info = [];
+        load(fnametmp,'cg');
+        src_info.xs = cg.r(1,:);
+        src_info.ys = cg.r(2,:);
+    end
     strues{j} = src_info;
     transparams_all{j} = transparams_use;
     kinfo_all{j} = kinfo_use;
@@ -171,6 +222,7 @@ for j = 1:length(test_range)
 end
 
 %%
+% this section plots the reconstructions 
 
 set(0,'defaultTextInterpreter','latex');
 
@@ -181,16 +233,29 @@ clf;
 set(gcf,'Position',[0,0,1200,600])
 tiledlayout(1,3,'TileSpacing','Tight');
 
-linestyles = {'b--','b:','b-.'};
+linestyles = {'r--','m:','b-.'};
 
 
 st = strues{1};
 xt = st.xs; yt = st.ys;
 
-xmax = max(xt); xmin = min(xt); xc = (xmax+xmin)/2;
+ti = linspace(0,2*pi,200); ti = ti(1:end-1);
+xi = cos(ti); yi = sin(ti);
+
+xmax = max(xt); xmin = min(xt);
+ymax = max(yt); ymin = min(yt);
+
+if contains(fsavebase,'polygon')
+    xmax = max(xmax,max(xi));
+    xmin = min(xmin,min(xi));
+    ymax = max(ymax,max(yi));
+    ymin = min(ymin,min(yi));
+end
+
+xc = (xmax+xmin)/2;
+yc = (ymax+ymin)/2;
 dx = (xmax-xmin)/2; 
 x1 = xc-dx*fac; x2 = xc+dx*fac;
-ymax = max(yt); ymin = min(yt); yc = (ymax+ymin)/2;
 dy = (ymax-ymin)/2; 
 y1 = yc-dy*fac; y2 = yc+dy*fac;
 
@@ -198,18 +263,20 @@ for j = 1:length(test_range)
     t = nexttile;
     plot(xt,yt,'k-')
     hold on
-    legnames = {'obstacle'};
+    plot(xi,yi,'k--','LineWidth',2)
+    legnames = {'obstacle','initial guess'};
     for i = 1:3
         sp = splots{j,i};
         xs = sp.xs; ys = sp.ys;
 
         plot(xs,ys,linestyles{i},'LineWidth',2)
         
-        legnames{i+1} = strcat("\omega = ",sprintf("%d",omega_list(i)));
+        legnames{i+2} = strcat("\omega = ",sprintf("%d",omega_list(i)));
     end
     
-    if (j == 1)
-        legend(legnames{:})
+    if (j == length(test_range))
+        legend(legnames{:},'Location','southeast','NumColumns',2,'FontSize', ...
+            10);
     end
 
     set(gca,'XTick',[],'YTick',[]);
@@ -222,7 +289,9 @@ for j = 1:length(test_range)
 end
 
 saveas(fig,[fsavebase, '_vary_delta.epsc']);
+
 %%
+% this section plots the recovered parameters
 
 set(0,'defaultTextInterpreter','latex');
 set(0,'defaultLineLineWidth',2)
@@ -235,7 +304,7 @@ fs = 16;
 
 %title(t,'recovered parameters','FontSize',fs,'Interpreter','latex')
 
-linestyles = {'b-','b:','b-.','b--'};
+linestyles = {'b-.','m:','r--','r-'};
 
 dmax = 0;
 cmax = 0;
@@ -271,6 +340,11 @@ for j = 1:length(test_range)
     rmax = max(rmax,max(rhorhats));
     cmax = max(cmax,max(crhats));
     crmax = max(crmax,max(crhats.*rhorhats));
+
+    dmax = max(dmax,delta);
+    rmax = max(rmax,rhor);
+    cmax = max(cmax,cr);
+    crmax = max(crmax,cr*rhor);
 
     t = nexttile(1);
 
@@ -321,4 +395,89 @@ for j = 1:length(test_range)
 end
 
 saveas(fig2,[fsavebase, '_imp_params.epsc']);
+
+%%
+% this section is only for the L shaped polygon domain
+% plot a zoom of the corners
+
+set(0,'defaultTextInterpreter','latex');
+
+fac = 1.1;
+
+fig = figure(1);
+clf;
+set(gcf,'Position',[0,0,900,600])
+tiledlayout(2,3,'TileSpacing','Tight');
+
+linestyles = {'r--','m:','b-.'};
+
+
+st = strues{1};
+xt = st.xs; yt = st.ys;
+
+xmax = max(xt); xmin = min(xt);
+ymax = max(yt); ymin = min(yt);
+
+assert(contains(fsavebase,'polygon'),'this section is only meant for L shaped domain');
+
+xc = (xmax+xmin)/2;
+yc = (ymax+ymin)/2;
+dx = (xmax-xmin)/2; 
+x1 = xc-dx*fac; x2 = xc+dx*fac;
+dy = (ymax-ymin)/2; 
+y1 = yc-dy*fac; y2 = yc+dy*fac;
+
+for ir = 1:2
+for j = 1:length(test_range)
+    t = nexttile;
+    plot(xt,yt,'k-')
+    hold on
+    legnames = {'obstacle'};
+    for i = 1:3
+        sp = splots{j,i};
+        xs = sp.xs; ys = sp.ys;
+
+        plot(xs,ys,linestyles{i},'LineWidth',2)
+        
+        legnames{i+1} = strcat("\omega = ",sprintf("%d",omega_list(i)));
+    end
+    
+    if (j == length(test_range))
+        legend(legnames{:},'Location','southeast','NumColumns',2,'FontSize', ...
+            10);
+    end
+
+    h = gca;
+    axis equal tight
+    fontsize(gca, scale=1.5);    
+
+    if (ir == 1)
+        xlim([0.9,1.3]); ylim([0.9,1.3]);
+        title(delta_list{j})    
+    else
+        xlim([0.7,1.1]); ylim([1.7,2.1]);
+        
+    end
+    
+    if ir == 2
+        set(gca,'XTick',[0.8,1]);
+    end
+    if ir == 1
+        set(gca,'XTick',[1.0,1.2]);
+    end
+        
+    if j == 1
+        if ir == 2
+            set(gca,'YTick',[1.8,2]);
+        end
+        if ir == 1
+            set(gca,'YTick',[1,1.2]);
+        end
+    else
+        set(gca,'YTick',[]);
+    end
+
+end
+end
+saveas(fig,[fsavebase, '_vary_delta_zoom.epsc']);
 

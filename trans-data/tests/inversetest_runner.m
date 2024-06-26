@@ -1,6 +1,6 @@
 function fnameout = inversetest_runner(test_id,ifforce_constkappa,...
     ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,...
-    sigma,ifconst_first,ncoeff_impedance_mult)
+    sigma,ifconst_first,ncoeff_impedance_mult,curvgrad,curvscal,maxit)
 %INVERSETEST_RUNNER a relatively stable selection of optimization
 % parameters
 %
@@ -35,6 +35,15 @@ if nargin < 10 || isempty(ifconst_first)
 end
 if nargin < 11 || isempty(ncoeff_impedance_mult)
     ncoeff_impedance_mult = 0.5;
+end
+if nargin < 12 || isempty(curvgrad)
+    curvgrad = false;
+end
+if nargin < 13 || isempty(curvscal)
+    curvscal = 1;
+end
+if nargin < 14 || isempty(maxit)
+    maxit = 40;
 end
 
 % select data set to load and some overrides...
@@ -90,6 +99,7 @@ end
 
 if ifforce_fourier
     impedance_type = 'fourier';
+    opts.lambdareal = false;
 end
 
 % FORCES A MODEST BOUND ON THE MODEL COEFFICIENTS (antbar2 should be
@@ -117,7 +127,7 @@ if strcmpi(impedance_type,'fourier')
 end
 optim_opts.eps_res = 1e-4;
 optim_opts.eps_upd = 1e-4;
-optim_opts.maxit = 40;
+optim_opts.maxit = maxit;
 optim_opts.ninner = ninner;
 optim_opts.stepfac = 8;
 optim_opts.maxit_filter = 3;
@@ -126,6 +136,9 @@ opts.constphasefactor = false;
 if ifphaseon
     opts.constphasefactor = true;
 end
+
+opts.curvgrad = curvgrad;
+opts.curvscal = curvscal;
 
 % modify some options for certain tests 
 
@@ -156,6 +169,7 @@ if (ifconst_first)
     opts0 = opts;
     opts0.impedance_type = 'fourier';
     opts0.ncoeff_impedance_mult = 0;
+    opts0.lambdareal = false;
 
     [inv_data_all0,~] = rla.rla_inverse_solver(u_meas,bc,...
                           optim_opts,opts0,src_init,lam_init);
@@ -179,6 +193,9 @@ end
 constfirst_str = "";
 if (ifconst_first)
     constfirst_str = "constfirst";
+end
+if curvgrad
+    constfirst_str = constfirst_str + "curvgrad";
 end
 
 sigstring = "sigma" + sprintf("%.1e",sigma);

@@ -9,13 +9,16 @@ clearvars;
 path_to_ios2d = '../inverse-obstacle-scattering2d/';
 addpath(path_to_ios2d);
 addpath(genpath_ex(path_to_ios2d));
+path_to_chunkie = '../chunkie/';
+run('../chunkie/startup.m');
 
 mult_epscurv_runs = false;
 findsigma = false;
 findfourier = false;
 findneumann = false;
+findbest = false;
 
-image_to_make = 423;
+image_to_make = 433;
 
 switch image_to_make
     case 421
@@ -56,9 +59,26 @@ switch image_to_make
         epsmake = 1e-1;
         omegaplot = [5,10,40];
         deltaplot = 66:2:70;
+    case 43
+        test_range = [71:75];
+        fsavebase = 'ridf_polygon_tens';
+        mult_epscurv_runs = true;
+        %epsmake = 1e-1;
+        omegaplot = [5,10,40];
+        deltaplot = 71:2:75;
+        findbest = true; % looks for best run based on final residual
+    case 433
+        test_range = [71:75];
+        fsavebase = 'ridf_polygon_constmodel';
+        mult_epscurv_runs = true;
+        %epsmake = 1e-1;
+        omegaplot = [5,10,40];
+        deltaplot = 71:2:75;
+        findbest = true; % looks for best run based on final residual
+        findfourier = true; %gets the constant model
 
     otherwise
-        test_range = [];
+        error("image_to_make undefined")
 end
 
 fnames_inv = {};
@@ -80,12 +100,27 @@ for j = 1:length(test_range)
     end
     fnamebase = ['../trans-data/data-out/',erase(st(1).name,'.mat')];
     fname_inv = [fnamebase, '.mat'];
+    rescomp = Inf;
+    
     if mult_epscurv_runs
         for jj = 1:length(st)
-            fnamebase = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
-            fnametmp = [fnamebase, '.mat'];
-            Atmp = load(fnametmp);
-            if Atmp.optim_opts.eps_curv == epsmake
+            fnamebase0 = ['../trans-data/data-out/',erase(st(jj).name,'.mat')];
+            fnametmp0 = [fnamebase0, '.mat'];
+            Atmp0 = load(fnametmp0);
+            Atmp0.inv_data_all{end}.res_opt;
+            Atmp0.optim_opts.eps_curv;
+            if findbest 
+                restmp = Atmp0.inv_data_all{end}.res_opt;
+                if restmp < rescomp
+                    rescomp = restmp;
+                    Atmp = Atmp0;
+                    fnamebase = fnamebase0;
+                    fname_inv = fnametmp0;
+                end
+            elseif Atmp0.optim_opts.eps_curv == epsmake
+                Atmp = Atmp0;
+                fnamebase = fnamebase0;
+                fname_inv = fnametmp0;
                 fprintf('found desired epscurv for test %d\n',test_id)
                 break
             end
@@ -140,6 +175,13 @@ for j = 1:length(test_range)
     deltas(j) = transparams_use.delta;
     omegas = (kinfo_use.k1:kinfo_use.dk:(kinfo_use.k1+(kinfo_use.nk-1)*kinfo_use.dk))/transparams_use.c2;
 
+    if contains(fsavebase,'polygon')
+        % true object is saved as a chunkgraph
+        src_info = [];
+        load(fname_orig,'cg');
+        src_info.xs = cg.r(1,:);
+        src_info.ys = cg.r(2,:);
+    end
     strues{j} = src_info;
 
     if any(test_range(j) == deltaplot)

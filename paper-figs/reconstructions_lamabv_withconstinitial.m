@@ -5,18 +5,15 @@
 % file names as appropriate in the defs of A and B below
 %
 
+clearvars
 
-
-%%
-
-A = load('../imp-data/data-out/test_016_tensdata_impck_io_antbar3_phaseoff_16-Nov-2023 12:34:27.mat');
+A = load('../imp-data/data-out/test_016_tensdata_impck_io_antbar3_phaseoff_25-Jun-2024 23:20:56.mat');
 B = load('../imp-data/data-out/test_016_tensdata_impck.mat');
 
 %%
 
 set(0,'defaultTextInterpreter','latex');
 set(0,'defaultLegendInterpreter','latex');
-
 
 linestyles = {'b--','b:','b-.'};
 
@@ -30,7 +27,9 @@ tiledlayout(1,2,"TileSpacing","tight");
 
 st = B.src_info;
 sf0 = A.inv_data_all0{end}.src_info_all{end};
+omega0 = A.inv_data_all0{end}.kh;
 sf1 = A.inv_data_all{end}.src_info_all{end};
+omega1 = A.inv_data_all{end}.kh;
 xt = st.xs; yt = st.ys;
 
 xmax = max(xt); xmin = min(xt); xc = (xmax+xmin)/2;
@@ -61,7 +60,8 @@ for j = 1:2
     h = gca;
     axis equal tight
         xlim([x1,x2]); ylim([y1,y2]);
-        legend('obstacle','const model',"refined")
+        legend('obstacle', "constant model $\omega=" + num2str(omega0) +"$",...
+            "curvature model $\omega=" + num2str(omega1) +"$");
         title('using initial guess')
     else
     plot(xs0,ys0,'gx','LineWidth',2,'MarkerSize',10)

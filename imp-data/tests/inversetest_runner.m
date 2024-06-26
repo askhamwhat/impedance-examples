@@ -1,6 +1,6 @@
 function fnameout = inversetest_runner(test_id,ifforce_constkappa,...
   ifphaseon,ifforce_fourier,invtype,ifckconstraint,ninner,eps_curv,sigma, ...
-  ifconst_first)
+  ifconst_first,ifproperr)
 %INVERSETEST_RUNNER a relatively stable selection of optimization
 % parameters
 %
@@ -33,6 +33,9 @@ end
 if nargin < 10 || isempty(ifconst_first)
     ifconst_first = false;
 end
+if nargin < 11 || isempty(ifproperr)
+    ifproperr = true;
+end
 
 
 % select data set to load and some overrides...
@@ -57,10 +60,13 @@ A = load(fname);
 u_meas = A.u_meas;
 for j = 1:length(u_meas)
     utmp = u_meas{j}.uscat_tgt;
-    scal = max(abs(utmp(:)));
+    erra = u_meas{j}.err_est
+    if ifproperr
+        sigma = 10*erra;
+    end
+    scal = max(abs(utmp(:)))
     u_meas{j}.uscat_tgt = utmp + sigma*scal*randn(size(utmp),"like",utmp);
 end
-
 
 impedance_type = A.impedance_type;
 
@@ -79,6 +85,7 @@ end
 
 if ifforce_fourier
     impedance_type = 'fourier';
+    opts.lambdareal = false;
 end
 
 % FORCES A MODEST BOUND ON THE MODEL COEFFICIENTS
@@ -143,14 +150,20 @@ if (ifconst_first)
     opts0 = opts;
     opts0.impedance_type = 'fourier';
     opts0.ncoeff_impedance_mult = 0;
+    opts0.lambdareal = false;
+    nfreq = length(u_meas);
+    rla_path_opts0 = [];
+    rla_path_opts0.ik_list = 1:10;
+    rla_path_opts1 = [];
+    rla_path_opts1.ik_list = 11:nfreq;
 
     [inv_data_all0,~] = rla.rla_inverse_solver(u_meas,bc,...
-                          optim_opts,opts0,src_init,lam_init);
+                          optim_opts,opts0,src_init,lam_init,rla_path_opts0);
     
     src_init = inv_data_all0{end}.src_info_all{end};
 
     [inv_data_all,~] = rla.rla_inverse_solver(u_meas,bc,...
-                          optim_opts,opts,src_init,lam_init);
+                          optim_opts,opts,src_init,lam_init,rla_path_opts1);
     
 else
     [inv_data_all,~] = rla.rla_inverse_solver(u_meas,bc,...
