@@ -78,7 +78,9 @@ inversetest_runner(test_id)
 - Section 4.2.4 (transmission): for each data set, do
 inversetest_neumann_runner(test_id) [does the neumann model] and
 inversettest_runner(test_id,[],[],true,[],[],[],[],[],[],0)
-[does the constant impedance model]
+[does the constant impedance model] and 
+inversettest_runner(test_id,[],[],true)
+[does the general fourier series model]
 - Section 4.3 (transmission with a corner using chunkIE): for each
 data set, do inversetest_runner(test_id)
 and inversetest_runner(test_id,[],[],[],[],[],[],5e-2) which runs the
@@ -109,8 +111,6 @@ and run the script to get the reconstructions and error plots
 as in the paper.
 Also set image_to_make=4212 and run reconstructions_vary_delta.m
 to get the recovered parameters as in the paper.
-Also set image_to_make=4213 and run reconstructions_vary_delta.m
-to get the results using the general fourier impedance model
 - Section 4.2.2: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=422
 and run the script. 
@@ -119,10 +119,8 @@ residual_image_delta_and_freq.m. In each, set image_to_make=423
 and run the script.
 - Section 4.2.4: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=424
-and run the script and set image_to_make=4242 and run the script.
-- Section 4.2.4: see reconstructions_vary_delta.m and
-residual_image_delta_and_freq.m. In each, set image_to_make=43
-and run the script.
+and run the script and set image_to_make=4242 and run the script
+and set image_to_make=4243
 - Section 4.3: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=43
 and run the script and also set image_to_make=432 and run the
