@@ -133,6 +133,9 @@ linestyles = {'r--','m:','b-.'};
 
 fac = 1.1;
 
+ti = linspace(0,2*pi,200); ti = ti(1:end-1);
+xi = cos(ti); yi = sin(ti);
+
 for j = 1:length(test_range)
     fig = figure(j);
     clf;
@@ -156,8 +159,8 @@ for j = 1:length(test_range)
         t = nexttile;
         plot(xt,yt,'k-','LineWidth',2)
         hold on
-        
-        legnames = {'obstacle'};
+        plot(xi,yi,'k--','LineWidth',2)
+        legnames = {'obstacle','initial guess'};
 
         for l = 1:3
             sp = splots{j}{i,l};

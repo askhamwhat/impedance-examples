@@ -27,7 +27,7 @@ switch image_to_make
         fsavebase = 'ridf_plane2_tens';
         omegaplot = [5,10,40];
         deltaplot = 61:63;
-    case 4213
+    case 4243
         test_range = [59:63];
         fsavebase = 'ridf_plane2_fourier';
         omegaplot = [5,10,40];

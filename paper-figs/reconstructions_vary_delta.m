@@ -28,7 +28,7 @@ switch image_to_make
         delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_tens';
         omega_list = [5,10,40];
-    case 4213
+    case 4243
         test_range = [61,62,63];
         delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_fourier_tens';
