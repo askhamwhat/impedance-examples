@@ -38,7 +38,7 @@ These contain predefined test ID numbers that will generate
 specific data sets. This can be done by calling
 
 ```
-run_transmission_generator(test_id)
+run_impedance_generator(test_id)
 ```
 in MATLAB in the imp-data/data-gen folder. This will generate a
 file in imp-data/data-out that can be used as data for an inverse
@@ -85,7 +85,11 @@ and inversetest_runner(test_id,[],[],[],[],[],[],5e-2) which runs the
 inverse impedance model with the same choice of C_H=0.9 as the other
 runs and a different choice of C_H=0.95 (this is set by eps_curv=1-C_H)
 For these problems (with corners), more curvature regularization was
-(sometimes) helpful.
+(sometimes) helpful. also do
+inversettest_runner(test_id,[],[],true,[],[],[],[],[],[],0)
+and inversettest_runner(test_id,[],[],true,[],[],[],5e-2,[],[],0)
+which runs the constant impedance model with the same curvature
+regularization options
 
 ## making plots
 
@@ -105,6 +109,8 @@ and run the script to get the reconstructions and error plots
 as in the paper.
 Also set image_to_make=4212 and run reconstructions_vary_delta.m
 to get the recovered parameters as in the paper.
+Also set image_to_make=4213 and run reconstructions_vary_delta.m
+to get the results using the general fourier impedance model
 - Section 4.2.2: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=422
 and run the script. 
@@ -117,7 +123,14 @@ and run the script and set image_to_make=4242 and run the script.
 - Section 4.2.4: see reconstructions_vary_delta.m and
 residual_image_delta_and_freq.m. In each, set image_to_make=43
 and run the script.
+- Section 4.3: see reconstructions_vary_delta.m and
+residual_image_delta_and_freq.m. In each, set image_to_make=43
+and run the script and also set image_to_make=432 and run the
+script.
 
 ## running MATLAB on a server
+
+This is a note to self. The following prevents most issues.
+If you want to not save the output you can redirect to /dev/null
 
 nohup matlab -nodisplay -nosplash -r "try; inversetest_runner(test_id); catch; disp('failed'); end; exit" > out.txt &

@@ -98,15 +98,7 @@ switch image_to_make
         findconstmodel = true;
         %epsmake = 1e-1;
         findbest = true; % finds best out of multiple epscurv based on final residual
-    
-    case 43999
-        test_range = 71:1:74;
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/4$','$\delta = \delta_0/16$','$\delta = \delta_0/64$'};
-        fsavebase = 'polygon_tens';
-        omega_list = [5,10,40];
-        mult_epscurv_runs = true;
-        %epsmake = 1e-1;
-        findbest = true; % finds best out of multiple epscurv based on final residual
+
 
 end
 
