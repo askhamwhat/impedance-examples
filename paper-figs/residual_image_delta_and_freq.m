@@ -19,7 +19,7 @@ findneumann = false;
 findbest = false;
 findconstmodel = false;
 
-image_to_make = 4242;
+image_to_make = 432;
 
 switch image_to_make
     case 421
@@ -27,7 +27,7 @@ switch image_to_make
         fsavebase = 'ridf_plane2_tens';
         omegaplot = [5,10,40];
         deltaplot = 61:63;
-    case 421999
+    case 4213
         test_range = [59:63];
         fsavebase = 'ridf_plane2_fourier';
         omegaplot = [5,10,40];
@@ -72,17 +72,17 @@ switch image_to_make
         mult_epscurv_runs = true;
         %epsmake = 1e-1;
         omegaplot = [5,10,40];
-        deltaplot = 71:2:75;
+        deltaplot = 73:75;
         findbest = true; % looks for best run based on final residual
-    case 433
+    case 432
         test_range = [71:75];
         fsavebase = 'ridf_polygon_constmodel';
         mult_epscurv_runs = true;
         %epsmake = 1e-1;
         omegaplot = [5,10,40];
-        deltaplot = 71:2:75;
+        deltaplot = 73:75;
         findbest = true; % looks for best run based on final residual
-        findfourier = true; %gets the constant model
+        findconstmodel = true; %gets the constant model
 
     otherwise
         error("image_to_make undefined")

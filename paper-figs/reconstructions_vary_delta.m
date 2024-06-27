@@ -11,7 +11,7 @@ run('../chunkie/startup.m');
 
 clearvars 
 
-image_to_make = 4242;
+image_to_make = 432;
 
 findsigma = false;
 
@@ -28,7 +28,7 @@ switch image_to_make
         delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_tens';
         omega_list = [5,10,40];
-    case 421999
+    case 4213
         test_range = [61,62,63];
         delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_fourier_tens';
@@ -76,34 +76,34 @@ switch image_to_make
         test_range = [66,68,70];
         delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
         fsavebase = 'plane2_pio8';
-        omega_list = [5,20,40];
+        omega_list = [5,10,40];
         mult_epscurv_runs = true;
         epsmake = 1e-1;
 
     case 43
-        test_range = 71:2:75;
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+        test_range = 73:75;
+        delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'polygon_tens';
-        omega_list = [5,20,40];
+        omega_list = [5,10,40];
         mult_epscurv_runs = true;
         %epsmake = 5e-2;
         findbest = true; % finds best out of multiple epscurv based on final residual
     
-    case 433
-        test_range = 71:2:75;
-        delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/16$','$\delta = \delta_0/256$'};
+    case 432
+        test_range = 73:75;
+        delta_list = {'$\delta = \delta_0/16$','$\delta = \delta_0/64$','$\delta = \delta_0/256$'};
         fsavebase = 'polygon_tens_constmodel';
-        omega_list = [5,20,40];
+        omega_list = [5,10,40];
         mult_epscurv_runs = true;
-        findfourier = true;
+        findconstmodel = true;
         %epsmake = 1e-1;
         findbest = true; % finds best out of multiple epscurv based on final residual
     
-    case 432
+    case 43999
         test_range = 71:1:74;
         delta_list = {'$\delta = \delta_0$','$\delta = \delta_0/4$','$\delta = \delta_0/16$','$\delta = \delta_0/64$'};
         fsavebase = 'polygon_tens';
-        omega_list = [5,20,40];
+        omega_list = [5,10,40];
         mult_epscurv_runs = true;
         %epsmake = 1e-1;
         findbest = true; % finds best out of multiple epscurv based on final residual

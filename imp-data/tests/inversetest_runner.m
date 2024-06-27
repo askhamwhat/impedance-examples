@@ -150,9 +150,7 @@ if (ifconst_first)
 end
 
 const_str = "";
-if (ifforce_fourier && ncoeff_impedance_mult == 0)
-    const_str = "constmodel";
-end
+
 sigstring = "sigma" + sprintf("%.1e",sigma);
 fnameout = fnamebase + "_" + bc.invtype + "_" + opts.impedance_type + const_str + "_" + constfirst_str + "_" + sigstring + "_" + string(datetime) + ".mat"
 %
